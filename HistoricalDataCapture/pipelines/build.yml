@@ -33,14 +33,14 @@ steps:
   - task: DotNetCoreCLI@2
     displayName: 'Build code'
     inputs:
-      projects: 'src/**/*.csproj'
+      projects: 'HistoricalDataCapture/src/**/*.csproj'
       arguments: '--configuration $(buildConfiguration) --no-restore'
 
 #  - task: DotNetCoreCLI@2
 #    displayName: Test
 #    inputs:
 #      command: test
-#      projects: 'src/**/*.UnitTests.csproj'
+#      projects: 'HistoricalDataCapture/src/**/*.UnitTests.csproj'
 #      arguments: '--configuration $(buildConfiguration) --no-build'
 
   - task: DotNetCoreCLI@2
@@ -48,14 +48,14 @@ steps:
     inputs:
       command: publish
       publishWebProjects: false
-      projects: 'src/Dfe.Spi.HistoricalDataCapture.Functions/Dfe.Spi.HistoricalDataCapture.Functions.csproj'
+      projects: 'HistoricalDataCapture/src/Dfe.Spi.HistoricalDataCapture.Functions/Dfe.Spi.HistoricalDataCapture.Functions.csproj'
       arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)/publish --no-restore --no-build'
 
   - task: CopyFiles@2
     displayName: 'Copy ARM template'
     inputs:
       Contents: |
-        azure/*
+        HistoricalDataCapture/azure/*
       TargetFolder: '$(build.artifactstagingdirectory)/publish'
       OverWrite: true
 
