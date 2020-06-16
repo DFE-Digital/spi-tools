@@ -27,7 +27,29 @@ namespace Dfe.Spi.HistoricalDataCapture.Infrastructure.AzureStorage
 
             using (var stream = new MemoryStream(data))
             {
-                await blob.UploadAsync(stream, cancellationToken);
+                await blob.UploadAsync(stream, true, cancellationToken);
+            }
+        }
+
+        public async Task<byte[]> ReadAsync(string folder, string fileName, CancellationToken cancellationToken)
+        {
+            var container = await GetOrCreateBlobContainerAsync(folder, cancellationToken);
+            var blob = container.GetBlobClient(fileName);
+
+            try
+            {
+                var downloadResult = await blob.DownloadAsync(cancellationToken);
+                var buffer = new byte[1024];
+                await downloadResult.Value.Content.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                return buffer;
+            }
+            catch (RequestFailedException ex)
+            {
+                if(ex.ErrorCode=="BlobNotFound")
+                {
+                    return null;
+                }
+                throw;
             }
         }
 

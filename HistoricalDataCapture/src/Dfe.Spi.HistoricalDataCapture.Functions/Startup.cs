@@ -5,12 +5,15 @@ using Dfe.Spi.Common.Http.Server.Definitions;
 using Dfe.Spi.Common.Logging;
 using Dfe.Spi.Common.Logging.Definitions;
 using Dfe.Spi.HistoricalDataCapture.Application.Gias;
+using Dfe.Spi.HistoricalDataCapture.Application.Ukrlp;
 using Dfe.Spi.HistoricalDataCapture.Domain.Configuration;
 using Dfe.Spi.HistoricalDataCapture.Domain.GiasClient;
 using Dfe.Spi.HistoricalDataCapture.Domain.Storage;
+using Dfe.Spi.HistoricalDataCapture.Domain.UkrlpClient;
 using Dfe.Spi.HistoricalDataCapture.Functions;
 using Dfe.Spi.HistoricalDataCapture.Infrastructure.AzureStorage;
 using Dfe.Spi.HistoricalDataCapture.Infrastructure.GiasSoapApi;
+using Dfe.Spi.HistoricalDataCapture.Infrastructure.UkrlpSoapApi;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs.Logging;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +42,7 @@ namespace Dfe.Spi.HistoricalDataCapture.Functions
             AddLogging(services);
             AddHttp(services);
             AddGias(services);
+            AddUkrlp(services);
             AddStorage(services);
         }
 
@@ -59,6 +63,7 @@ namespace Dfe.Spi.HistoricalDataCapture.Functions
             rawConfiguration.Bind(configuration);
             services.AddSingleton(configuration);
             services.AddSingleton(configuration.Gias);
+            services.AddSingleton(configuration.Ukrlp);
             services.AddSingleton(configuration.Storage);
         }
 
@@ -83,6 +88,12 @@ namespace Dfe.Spi.HistoricalDataCapture.Functions
         {
             services.AddScoped<IGiasDownloader, GiasDownloader>();
             services.AddScoped<IGiasClient, GiasSoapClient>();
+        }
+
+        private void AddUkrlp(IServiceCollection services)
+        {
+            services.AddScoped<IUkrlpDownloader, UkrlpDownloader>();
+            services.AddScoped<IUkrlpClient, UkrlpSoapClient>();
         }
 
         private void AddStorage(IServiceCollection services)

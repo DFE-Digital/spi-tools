@@ -23,5 +23,6 @@
       <ProjectReference Include="..\Dfe.Spi.HistoricalDataCapture.Application\Dfe.Spi.HistoricalDataCapture.Application.csproj" />
       <ProjectReference Include="..\Dfe.Spi.HistoricalDataCapture.Infrastructure.AzureStorage\Dfe.Spi.HistoricalDataCapture.Infrastructure.AzureStorage.csproj" />
       <ProjectReference Include="..\Dfe.Spi.HistoricalDataCapture.Infrastructure.GiasSoapApi\Dfe.Spi.HistoricalDataCapture.Infrastructure.GiasSoapApi.csproj" />
+      <ProjectReference Include="..\Dfe.Spi.HistoricalDataCapture.Infrastructure.UkrlpSoapApi\Dfe.Spi.HistoricalDataCapture.Infrastructure.UkrlpSoapApi.csproj" />
     </ItemGroup>
 </Project>
