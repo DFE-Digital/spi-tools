@@ -191,7 +191,7 @@
             },
             {
               "name": "SPI_Ukrlp__SoapUrl",
-              "value": "[parameters('giasUrl')]"
+              "value": "[parameters('ukrlpUrl')]"
             },
             {
               "name": "SPI_Ukrlp__StakeholderId",
