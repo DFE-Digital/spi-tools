@@ -9,6 +9,7 @@ using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Ukrlp;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.AppState;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -24,9 +25,11 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             var giasHistoricalRepository = new BlobGiasHistoricalRepository(options.HistoricalConnectionString);
             var ukrlpHistoricalRepository = new BlobUkrlpHistoricalRepository(options.HistoricalConnectionString);
             var preparedGiasRepository = new FileSystemPreparedGiasRepository(options.DataDirectory);
+            var preparedUkrlpRepository = new FileSystemPreparedUkrlpRepository(options.DataDirectory);
             
             var dayProcessor = new DayProcessor(
                 preparedGiasRepository, 
+                preparedUkrlpRepository,
                 logger);
 
             var processor = new HistoricalDataProcessor(
@@ -38,6 +41,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             
             // Initialise state
             await preparedGiasRepository.InitAsync(cancellationToken);
+            await preparedUkrlpRepository.InitAsync(cancellationToken);
 
             // Run
             await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
