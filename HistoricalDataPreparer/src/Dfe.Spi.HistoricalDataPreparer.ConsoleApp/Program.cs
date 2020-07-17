@@ -9,6 +9,7 @@ using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Ukrlp;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.AppState;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Statistics;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp;
 using Serilog;
 using Serilog.Events;
@@ -26,10 +27,12 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             var ukrlpHistoricalRepository = new BlobUkrlpHistoricalRepository(options.HistoricalConnectionString);
             var preparedGiasRepository = new FileSystemPreparedGiasRepository(options.DataDirectory);
             var preparedUkrlpRepository = new FileSystemPreparedUkrlpRepository(options.DataDirectory);
+            var statisticsRepository = new InProcStatisticsRepository(new FileSystemStatisticsRepository(options.DataDirectory));
             
             var dayProcessor = new DayProcessor(
                 preparedGiasRepository, 
                 preparedUkrlpRepository,
+                statisticsRepository,
                 logger);
 
             var processor = new HistoricalDataProcessor(
@@ -45,6 +48,17 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
 
             // Run
             await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
+            
+            // Log stats
+            logger.Information("Processed {NumberOfDays} days in {TotalDuration}", 
+                statisticsRepository.GetNumberOfDaysProcessed(), statisticsRepository.GetTotalDuration());
+            foreach (var dateStatistics in statisticsRepository.Dates)
+            {
+                logger.Information("Completed {Date} in {Duration}, which had {EstablishmentsChanged} establishments, {GroupsChanged} groups, " +
+                                   "{LocalAuthoritiesChanged} local authorities and {ProvidersChanged} providers change",
+                    dateStatistics.Date.ToString("yyyy-MM-dd"), dateStatistics.Duration, dateStatistics.EstablishmentsChanged, dateStatistics.GroupsChanged, 
+                    dateStatistics.LocalAuthoritiesChanged, dateStatistics.ProvidersChanged);
+            }
         }
 
         static void Main(string[] args)

@@ -36,7 +36,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
             var dateLastProcessed = await _appStateRepository.GetLastDateProcessedAsync(cancellationToken);
             var date = dateLastProcessed.Date.AddDays(1);
             _logger.Information("Starting at date {Date}", date.ToString("yyyy-MM-dd"));
-            while (date < DateTime.Today && !cancellationToken.IsCancellationRequested)
+            while (date <= DateTime.Today && !cancellationToken.IsCancellationRequested)
             {
                 using (LogContext.PushProperty("Date", date.ToString("yyyy-MM-dd")))
                 {

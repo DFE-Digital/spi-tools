@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Dfe.Spi.HistoricalDataPreparer.Domain.Gias;
+using Dfe.Spi.HistoricalDataPreparer.Domain.Statistics;
 using Dfe.Spi.HistoricalDataPreparer.Domain.Ukrlp;
 using Serilog;
 
@@ -22,28 +23,45 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
         private readonly Dictionary<Type, PropertyInfo[]> _propertyCache;
         private readonly IPreparedGiasRepository _preparedGiasRepository;
         private readonly IPreparedUkrlpRepository _preparedUkrlpRepository;
+        private readonly IStatisticsRepository _statisticsRepository;
         private readonly ILogger _logger;
 
         public DayProcessor(
             IPreparedGiasRepository preparedGiasRepository,
             IPreparedUkrlpRepository preparedUkrlpRepository,
+            IStatisticsRepository statisticsRepository,
             ILogger logger)
         {
             _propertyCache = new Dictionary<Type, PropertyInfo[]>();
             _preparedGiasRepository = preparedGiasRepository;
             _preparedUkrlpRepository = preparedUkrlpRepository;
+            _statisticsRepository = statisticsRepository;
             _logger = logger;
         }
 
         public async Task ProcessDaysDataAsync(DateTime date, GiasDayData giasData, UkrlpDayData ukrlpDayData, CancellationToken cancellationToken)
         {
+            var startTime = DateTime.Now;
+            
             // GIAS
-            // var changedEstablishments = await ProcessEstablishmentsForDeltas(giasData.Establishments, giasData.GroupLinks, date, cancellationToken);
-            // var changedGroups = await ProcessGroupsForDeltas(giasData.Groups, date, cancellationToken);
-            // var changedLocalAuthorities = await ProcessLocalAuthoritiesForDeltas(giasData.LocalAuthorities, date, cancellationToken);
+            var changedEstablishments = await ProcessEstablishmentsForDeltas(giasData.Establishments, giasData.GroupLinks, date, cancellationToken);
+            var changedGroups = await ProcessGroupsForDeltas(giasData.Groups, date, cancellationToken);
+            var changedLocalAuthorities = await ProcessLocalAuthoritiesForDeltas(giasData.LocalAuthorities, date, cancellationToken);
 
             // UKRLP
             var changedProviders = await ProcessProvidersForDeltas(ukrlpDayData.Providers, date, cancellationToken);
+            
+            // Save stats
+            var duration = DateTime.Now - startTime;
+            await _statisticsRepository.StoreDateStatisticsAsync(new DateStatistics
+            {
+                Date = date,
+                Duration = duration,
+                EstablishmentsChanged = changedEstablishments.Length,
+                GroupsChanged = changedGroups.Length,
+                LocalAuthoritiesChanged = changedLocalAuthorities.Length,
+                ProvidersChanged = changedProviders.Length,
+            }, cancellationToken);
         }
 
         private async Task<Establishment[]> ProcessEstablishmentsForDeltas(Establishment[] establishments, GroupLink[] groupLinks, DateTime date,
