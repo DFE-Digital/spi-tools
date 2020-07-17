@@ -1,12 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Dfe.Spi.HistoricalDataPreparer.Application;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Gias;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Ukrlp;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.AppState;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
@@ -18,11 +22,22 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             // Create processor + dependencies
             var appStateRepository = new FileSystemAppStateRepository(options.DataDirectory, new DateTime(2020, 06, 16));
             var giasHistoricalRepository = new BlobGiasHistoricalRepository(options.HistoricalConnectionString);
+            var ukrlpHistoricalRepository = new BlobUkrlpHistoricalRepository(options.HistoricalConnectionString);
+            var preparedGiasRepository = new FileSystemPreparedGiasRepository(options.DataDirectory);
+            
+            var dayProcessor = new DayProcessor(
+                preparedGiasRepository, 
+                logger);
 
             var processor = new HistoricalDataProcessor(
                 appStateRepository,
                 giasHistoricalRepository,
+                ukrlpHistoricalRepository,
+                dayProcessor,
                 logger);
+            
+            // Initialise state
+            await preparedGiasRepository.InitAsync(cancellationToken);
 
             // Run
             await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
@@ -64,6 +79,10 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
                 }
                 catch (Exception ex)
                 {
+                    if (ex is AggregateException aex && aex.InnerExceptions.First() is TaskCanceledException)
+                    {
+                        return;
+                    }
                     logger.Error(ex, "Unexpected error occured while preparing historical data");
                 }
                 finally
@@ -85,8 +104,10 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             Console.WriteLine($"Logging to {logFileInfo.FullName}");
 
             var logMessageFormat = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Properties:j}{NewLine}{Exception}";
+            var level = options.IncludeDebug ? LogEventLevel.Debug : LogEventLevel.Information;
 
             return new LoggerConfiguration()
+                .MinimumLevel.Is(level)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(theme: AnsiConsoleTheme.Code, outputTemplate: logMessageFormat)
                 .WriteTo.File(logFileInfo.FullName, outputTemplate: logMessageFormat)

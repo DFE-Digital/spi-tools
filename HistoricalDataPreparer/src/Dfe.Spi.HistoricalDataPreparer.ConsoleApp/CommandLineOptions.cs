@@ -4,6 +4,9 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
 {
     public class CommandLineOptions
     {
+        [Option('d', "debug", Required = false, Default = false, HelpText = "Include debug logs")]
+        public bool IncludeDebug { get; set; }
+        
         [Option("log-directory", Required = false, HelpText = "Directory to log to. Default is application running directory")]
         public string LogDirectory { get; set; }
         
