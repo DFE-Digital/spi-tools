@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Dfe.Spi.HistoricalDataPreparer.Application\Dfe.Spi.HistoricalDataPreparer.Application.csproj" />
+      <ProjectReference Include="..\Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage\Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.csproj" />
       <ProjectReference Include="..\Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem\Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.csproj" />
     </ItemGroup>
 

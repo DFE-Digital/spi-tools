@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using Dfe.Spi.HistoricalDataPreparer.Application;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.AppState;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -16,9 +17,11 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
         {
             // Create processor + dependencies
             var appStateRepository = new FileSystemAppStateRepository(options.DataDirectory, new DateTime(2020, 06, 16));
+            var giasHistoricalRepository = new BlobGiasHistoricalRepository(options.HistoricalConnectionString);
 
             var processor = new HistoricalDataProcessor(
                 appStateRepository,
+                giasHistoricalRepository,
                 logger);
 
             // Run

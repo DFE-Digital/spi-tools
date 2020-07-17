@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPrepa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem", "Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem\Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.csproj", "{0B3CE70E-AB56-4336-9261-544F72F30704}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage", "Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage\Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.csproj", "{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{0B3CE70E-AB56-4336-9261-544F72F30704}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B3CE70E-AB56-4336-9261-544F72F30704}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B3CE70E-AB56-4336-9261-544F72F30704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
