@@ -9,8 +9,11 @@ using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Ukrlp;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.AppState;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Statistics;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi;
+using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi.Translation;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -27,11 +30,15 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             var ukrlpHistoricalRepository = new BlobUkrlpHistoricalRepository(options.HistoricalConnectionString);
             var preparedGiasRepository = new FileSystemPreparedGiasRepository(options.DataDirectory);
             var preparedUkrlpRepository = new FileSystemPreparedUkrlpRepository(options.DataDirectory);
+            var preparedRegistryRepository = new FileSystemPreparedRegistryRepository(options.DataDirectory);
+            var translation = new SpiTranslationApi(options.SpiTranslationApiUrl, options.SpiTranslationApiSubscriptionKey);
             var statisticsRepository = new InProcStatisticsRepository(new FileSystemStatisticsRepository(options.DataDirectory));
             
             var dayProcessor = new DayProcessor(
                 preparedGiasRepository, 
                 preparedUkrlpRepository,
+                preparedRegistryRepository,
+                translation,
                 statisticsRepository,
                 logger);
 
@@ -45,6 +52,13 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             // Initialise state
             await preparedGiasRepository.InitAsync(cancellationToken);
             await preparedUkrlpRepository.InitAsync(cancellationToken);
+            await preparedRegistryRepository.InitAsync(cancellationToken);
+            await translation.InitAsync(
+                options.SpiOAuthTokenEndpoint, 
+                options.SpiOAuthClientId, 
+                options.SpiOAuthClientSecret, 
+                options.SpiOAuthResource,
+                cancellationToken);
 
             // Run
             await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
@@ -55,9 +69,9 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
             foreach (var dateStatistics in statisticsRepository.Dates)
             {
                 logger.Information("Completed {Date} in {Duration}, which had {EstablishmentsChanged} establishments, {GroupsChanged} groups, " +
-                                   "{LocalAuthoritiesChanged} local authorities and {ProvidersChanged} providers change",
+                                   "{LocalAuthoritiesChanged} local authorities, {ProvidersChanged} providers and {RegistryEntriesChanged} change",
                     dateStatistics.Date.ToString("yyyy-MM-dd"), dateStatistics.Duration, dateStatistics.EstablishmentsChanged, dateStatistics.GroupsChanged, 
-                    dateStatistics.LocalAuthoritiesChanged, dateStatistics.ProvidersChanged);
+                    dateStatistics.LocalAuthoritiesChanged, dateStatistics.ProvidersChanged, dateStatistics.RegistryEntriesChanged);
             }
         }
 

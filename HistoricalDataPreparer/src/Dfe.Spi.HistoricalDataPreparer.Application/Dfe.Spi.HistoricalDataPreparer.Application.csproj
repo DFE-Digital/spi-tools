@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Dfe.Spi.Common.WellKnownIdentifiers" Version="1.2.1" />
       <PackageReference Include="Serilog" Version="2.9.0" />
     </ItemGroup>
 
