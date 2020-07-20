@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataLoade
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataLoader.UkrlpLoaderConsoleApp", "Dfe.Spi.HistoricalDataLoader.UkrlpLoaderConsoleApp\Dfe.Spi.HistoricalDataLoader.UkrlpLoaderConsoleApp.csproj", "{3784BB58-4338-43BB-B9DB-42C96B5783A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp", "Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp\Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp.csproj", "{C49C8528-7B3B-48B3-991C-A266F3566728}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{3784BB58-4338-43BB-B9DB-42C96B5783A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3784BB58-4338-43BB-B9DB-42C96B5783A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3784BB58-4338-43BB-B9DB-42C96B5783A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C49C8528-7B3B-48B3-991C-A266F3566728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49C8528-7B3B-48B3-991C-A266F3566728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C49C8528-7B3B-48B3-991C-A266F3566728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C49C8528-7B3B-48B3-991C-A266F3566728}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
