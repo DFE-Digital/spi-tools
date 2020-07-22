@@ -92,7 +92,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                 var latest = new RegisteredEntity
                 {
                     Id = Guid.NewGuid().ToString(),
-                    Type = entity.Type,
+                    Type = entity.EntityType,
                     ValidFrom = date,
                     Entities = new[] {entity},
                     Links = previous?.Links,
@@ -132,7 +132,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                 var latest = new RegisteredEntity
                 {
                     Id = Guid.NewGuid().ToString(),
-                    Type = entity.Type,
+                    Type = entity.EntityType,
                     ValidFrom = date,
                     Entities = new[] {entity},
                 };
@@ -246,7 +246,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                 var latest = new RegisteredEntity
                 {
                     Id = Guid.NewGuid().ToString(),
-                    Type = entity.Type,
+                    Type = entity.EntityType,
                     ValidFrom = date,
                     Entities = new[] {entity},
                 };
