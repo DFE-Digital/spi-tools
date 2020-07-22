@@ -46,7 +46,7 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
         {
             var index = await LoadIndexAsync();
 
-            var entityTypes = index.Keys.Where(x => !x.Equals("learning-provider")).OrderBy(x => x).ToArray();
+            var entityTypes = index.Keys.OrderBy(x => x).ToArray();
             foreach (var entityType in entityTypes)
             {
                 var documentIds = index[entityType];
