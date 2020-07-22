@@ -16,7 +16,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp
         {
             _dataDirectory = Path.Combine(dataDirectory, "ukrlp");
             
-            _providerIndex = new VersionIndex<long>(_dataDirectory, "providers-index.json");
+            _providerIndex = new VersionIndex<long>(_dataDirectory, "providers-index");
         }
         
         public async Task InitAsync(CancellationToken cancellationToken)

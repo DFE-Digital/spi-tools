@@ -19,9 +19,9 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias
         {
             _dataDirectory = Path.Combine(dataDirectory, "gias");
             
-            _establishmentIndex = new VersionIndex<long>(_dataDirectory, "establishments-index.json");
-            _groupIndex = new VersionIndex<long>(_dataDirectory, "groups-index.json");
-            _localAuthorityIndex = new VersionIndex<int>(_dataDirectory, "local-authorities-index.json");
+            _establishmentIndex = new VersionIndex<long>(_dataDirectory, "establishments-index");
+            _groupIndex = new VersionIndex<long>(_dataDirectory, "groups-index");
+            _localAuthorityIndex = new VersionIndex<int>(_dataDirectory, "local-authorities-index");
         }
         
         public async Task InitAsync(CancellationToken cancellationToken)
