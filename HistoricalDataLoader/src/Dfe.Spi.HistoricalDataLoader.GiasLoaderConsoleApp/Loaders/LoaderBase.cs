@@ -97,7 +97,7 @@ namespace Dfe.Spi.HistoricalDataLoader.GiasLoaderConsoleApp.Loaders
 
         protected async Task<Dictionary<TIdentifier, DateTime[]>> LoadIndexAsync()
         {
-            var path = Path.Combine(_dataDirectory, $"{_indexFilePrefix}-index.json.json");
+            var path = Path.Combine(_dataDirectory, $"{_indexFilePrefix}-index.json");
             return await FileSystemHelper.ReadFileAsAsync<Dictionary<TIdentifier, DateTime[]>>(path);
         }
 

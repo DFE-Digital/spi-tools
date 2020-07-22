@@ -98,7 +98,7 @@ namespace Dfe.Spi.HistoricalDataLoader.UkrlpLoaderConsoleApp
 
         protected async Task<Dictionary<long, DateTime[]>> LoadIndexAsync()
         {
-            var path = Path.Combine(_dataDirectory, $"{_indexFilePrefix}-index.json.json");
+            var path = Path.Combine(_dataDirectory, $"{_indexFilePrefix}-index.json");
             return await FileSystemHelper.ReadFileAsAsync<Dictionary<long, DateTime[]>>(path);
         }
 
