@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.ConsoleApp", "Dfe.Spi.HistoricalDataPreparer.ConsoleApp\Dfe.Spi.HistoricalDataPreparer.ConsoleApp.csproj", "{6E045D59-8486-4539-A565-745FFF86B95A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Application", "Dfe.Spi.HistoricalDataPreparer.Application\Dfe.Spi.HistoricalDataPreparer.Application.csproj", "{3E605887-2ED2-4837-A0E3-37D52BCB061F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Domain", "Dfe.Spi.HistoricalDataPreparer.Domain\Dfe.Spi.HistoricalDataPreparer.Domain.csproj", "{20EBE33F-4327-45F7-9D7D-2A68AA5A34D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem", "Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem\Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.csproj", "{0B3CE70E-AB56-4336-9261-544F72F30704}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage", "Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage\Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.csproj", "{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi", "Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi\Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi.csproj", "{1976DC0E-F802-49ED-A058-CA5975D185A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E045D59-8486-4539-A565-745FFF86B95A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E045D59-8486-4539-A565-745FFF86B95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E045D59-8486-4539-A565-745FFF86B95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E045D59-8486-4539-A565-745FFF86B95A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E605887-2ED2-4837-A0E3-37D52BCB061F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E605887-2ED2-4837-A0E3-37D52BCB061F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E605887-2ED2-4837-A0E3-37D52BCB061F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E605887-2ED2-4837-A0E3-37D52BCB061F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20EBE33F-4327-45F7-9D7D-2A68AA5A34D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20EBE33F-4327-45F7-9D7D-2A68AA5A34D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20EBE33F-4327-45F7-9D7D-2A68AA5A34D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20EBE33F-4327-45F7-9D7D-2A68AA5A34D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B3CE70E-AB56-4336-9261-544F72F30704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B3CE70E-AB56-4336-9261-544F72F30704}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B3CE70E-AB56-4336-9261-544F72F30704}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B3CE70E-AB56-4336-9261-544F72F30704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78E4FCD-8B3F-4178-B43B-6F3BAA55A53F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1976DC0E-F802-49ED-A058-CA5975D185A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1976DC0E-F802-49ED-A058-CA5975D185A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1976DC0E-F802-49ED-A058-CA5975D185A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1976DC0E-F802-49ED-A058-CA5975D185A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
