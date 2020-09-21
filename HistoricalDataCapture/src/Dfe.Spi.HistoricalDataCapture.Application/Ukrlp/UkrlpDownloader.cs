@@ -16,7 +16,7 @@ namespace Dfe.Spi.HistoricalDataCapture.Application.Ukrlp
     
     public class UkrlpDownloader : IUkrlpDownloader
     {
-        private const string StorageFolderName = "ukrlp";
+        private const string StorageFolderName = "ukrlp2";
         private const string LastChangeFileName = "lastchange.txt";
         
         private readonly IUkrlpClient _ukrlpClient;
@@ -44,14 +44,18 @@ namespace Dfe.Spi.HistoricalDataCapture.Application.Ukrlp
             
             // Download
             _logger.Info($"Starting to get UKRLP changes since {lastChange}...");
-            var downloadBuffer = await _ukrlpClient.GetChangesSinceAsync(lastChange, cancellationToken);
-            _logger.Info($"Ukrlp changes downloaded, size: ${downloadBuffer.Length} bytes");
+            var statuses = new[] {"A", "V", "PD1", "PD2"};
+            foreach (var status in statuses)
+            {
+                var downloadBuffer = await _ukrlpClient.GetChangesSinceAsync(lastChange, status, cancellationToken);
+                _logger.Info($"Ukrlp changes for status {status} downloaded, size: ${downloadBuffer.Length} bytes");
             
-            // Store
-            var fileName = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss}Z.xml";
-            _logger.Info($"Storing extract in folder {StorageFolderName} with name {fileName}...");
-            await _storage.StoreAsync(StorageFolderName, fileName, downloadBuffer, cancellationToken);
-            _logger.Info("Extract stored");
+                // Store
+                var fileName = $"{DateTime.UtcNow:yyyy-MM-ddTHH:mm:ss}Z-{status}.xml";
+                _logger.Info($"Storing extract in folder {StorageFolderName} with name {fileName}...");
+                await _storage.StoreAsync(StorageFolderName, fileName, downloadBuffer, cancellationToken);
+                _logger.Info("Extract stored");
+            }
             
             // Update last pull
             var updatedLastChangeBuffer = Encoding.UTF8.GetBytes(now.ToString());

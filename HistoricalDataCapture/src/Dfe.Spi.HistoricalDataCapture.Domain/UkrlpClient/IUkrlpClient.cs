@@ -6,6 +6,6 @@ namespace Dfe.Spi.HistoricalDataCapture.Domain.UkrlpClient
 {
     public interface IUkrlpClient
     {
-        Task<byte[]> GetChangesSinceAsync(DateTime sinceTime, CancellationToken cancellationToken);
+        Task<byte[]> GetChangesSinceAsync(DateTime sinceTime, string status, CancellationToken cancellationToken);
     }
 }

@@ -32,9 +32,9 @@ namespace Dfe.Spi.HistoricalDataCapture.Infrastructure.UkrlpSoapApi
         {
         }
         
-        public async Task<byte[]> GetChangesSinceAsync(DateTime sinceTime, CancellationToken cancellationToken)
+        public async Task<byte[]> GetChangesSinceAsync(DateTime sinceTime, string status, CancellationToken cancellationToken)
         {
-            var message = _messageBuilder.BuildMessageToGetUpdatesSince(sinceTime);
+            var message = _messageBuilder.BuildMessageToGetUpdatesSince(sinceTime, status);
 
             var request = new RestRequest(Method.POST);
             request.AddParameter("text/xml", message, ParameterType.RequestBody);
