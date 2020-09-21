@@ -25,7 +25,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
         static async Task RunAsync(CommandLineOptions options, ILogger logger, CancellationToken cancellationToken)
         {
             // Create processor + dependencies
-            var appStateRepository = new FileSystemAppStateRepository(options.DataDirectory, new DateTime(2020, 06, 16));
+            var appStateRepository = new FileSystemAppStateRepository(options.DataDirectory, new DateTime(2016, 09, 01).AddDays(-1));
             var giasHistoricalRepository = new BlobGiasHistoricalRepository(options.HistoricalConnectionString);
             var ukrlpHistoricalRepository = new BlobUkrlpHistoricalRepository(options.HistoricalConnectionString);
             var preparedGiasRepository = new FileSystemPreparedGiasRepository(options.DataDirectory);
