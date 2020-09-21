@@ -12,7 +12,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.AzureStorage.Ukrlp
     public class BlobUkrlpHistoricalRepository : AzureBlobStorageRepository, IUkrlpHistoricalRepository
     {
         public BlobUkrlpHistoricalRepository(string connectionString) 
-            : base(connectionString, "ukrlp")
+            : base(connectionString, "ukrlp2")
         {
         }
 

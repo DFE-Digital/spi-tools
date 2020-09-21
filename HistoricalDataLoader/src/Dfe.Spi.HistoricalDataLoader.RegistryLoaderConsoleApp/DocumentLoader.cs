@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Dfe.Spi.HistoricalDataLoader.Common;
 using Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp.Models;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -36,7 +38,6 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
                     SerializerOptions = new CosmosSerializationOptions
                     {
                         PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase,
-                        IgnoreNullValues = true,
                     },
                 });
             _container = client.GetDatabase(cosmosDbName).GetContainer(cosmosContainerName);
@@ -46,7 +47,10 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
         {
             var index = await LoadIndexAsync();
 
-            var entityTypes = index.Keys.OrderBy(x => x).ToArray();
+            var entityTypes = index.Keys
+                .Where(x=>x.Equals("management-group", StringComparison.InvariantCultureIgnoreCase)) //TODO: Remove
+                .OrderBy(x => x)
+                .ToArray();
             foreach (var entityType in entityTypes)
             {
                 var documentIds = index[entityType];
@@ -62,77 +66,72 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
 
         private async Task ProcessEntityTypeAsync(string entityType, List<string> documentIds, CancellationToken cancellationToken)
         {
-            const int maxDocumentCount = 100;
-            const long maxRequestSize = 700000;
-            //                          7282423
+            var partitionedEntities = new Dictionary<string, List<CosmosRegisteredEntity>>();
 
-            var batch = _container.CreateTransactionalBatch(new PartitionKey(entityType));
-            var batchDocumentCount = 0;
-            var batchSize = 0L;
+            // Partition
+            _logger.Information("Starting to batch documents of type {EntityType}", entityType);
             for (var i = 0; i < documentIds.Count; i++)
             {
+                _logger.Debug("Loading document {Index} of {TotalNumberOfDocuments} of type {EntityType}",
+                    i, documentIds.Count, entityType);
+
                 var documentId = documentIds[i];
-
-                _logger.Information("Processing {EntityType} {Index} of {NumDocuments}",
-                    entityType, i + 1, documentIds.Count);
-
                 var documentPath = Path.Combine(_dataDirectory, $"{documentId}.json");
-                var registeredEntity = await FileSystemHelper.ReadFileAsAsync<RegisteredEntity>(documentPath);
-                var documentSize = SizeOf(registeredEntity);
-                var entityAdded = false;
+                var registeredEntity = await FileSystemHelper.ReadFileAsAsync<CosmosRegisteredEntity>(documentPath);
 
-                if (batchSize + documentSize < maxRequestSize)
+                if (!partitionedEntities.ContainsKey(registeredEntity.PartitionableId))
                 {
-                    batch.UpsertItem(registeredEntity);
-                    batchDocumentCount++;
-                    batchSize += documentSize;
-                    entityAdded = true;
-                }
-                else
-                {
-                    _logger.Debug("{EntityType} {Index} not added before upload as it is {DocumentSize} and the batch is already {BatchSize}. " +
-                                  "Adding it would make the batch {PredictedBatchSize}, which would have exceeded the total size of {MaxRequestSize}",
-                        entityType, i + 1, documentSize, batchSize, batchSize + documentSize, maxRequestSize);
+                    partitionedEntities.Add(registeredEntity.PartitionableId, new List<CosmosRegisteredEntity>());
                 }
 
-                if (batchDocumentCount == maxDocumentCount || !entityAdded)
-                {
-                    _logger.Information("Pushing batch of {BatchSize} {EntityType} (size: {BatchSizeBytes})",
-                        batchDocumentCount, entityType, batchSize);
-
-                    using var batchResponse = await batch.ExecuteAsync(cancellationToken);
-                    if (!batchResponse.IsSuccessStatusCode)
-                    {
-                        throw new Exception($"Failed to store batch of entities. {batchResponse.StatusCode} - {batchResponse.ErrorMessage}");
-                    }
-
-                    batch = _container.CreateTransactionalBatch(new PartitionKey(entityType));
-                    batchDocumentCount = 0;
-                    batchSize = 0;
-                }
-
-                if (!entityAdded)
-                {
-                    batch.UpsertItem(registeredEntity);
-                    batchDocumentCount++;
-                    batchSize += documentSize;
-                    
-                    _logger.Debug("{EntityType} {Index} added now batch has been flushed",
-                        entityType, i + 1);
-                }
+                partitionedEntities[registeredEntity.PartitionableId].Add(registeredEntity);
             }
 
-            if (batchDocumentCount > 0)
-            {
-                _logger.Information("Pushing batch of {BatchSize} {EntityType}",
-                    batchDocumentCount, entityType);
+            _logger.Information("Built {NumberOfBatches} batches of type {EntityType}", partitionedEntities.Count, entityType);
 
+            // Upload
+             const long maxRequestSize = 700000;
+            
+            _logger.Information("Starting to uploaded batches of type {EntityType}", entityType);
+            var partitionIds = partitionedEntities.Keys.ToArray();
+            for (var i = 0; i < partitionIds.Length; i++)
+            {
+                var partitionId = partitionIds[i];
+                _logger.Debug("Uploading partition {Index} ({PartitionId}) of {TotalNumberOfPartitions} of type {EntityType}",
+                    i, partitionId, partitionIds.Length, entityType);
+            
+                var registeredEntities = partitionedEntities[partitionId];
+                var partitionKey = new PartitionKey(partitionId);
+            
+                var potentialBatchSize = registeredEntities
+                    .Select(SizeOf)
+                    .Sum();
+                if (potentialBatchSize >= maxRequestSize)
+                {
+                    _logger.Information("Batch would be too large, processing individually");
+                    for (var j = 0; j < registeredEntities.Count; j++)
+                    {
+                        _logger.Debug("Uploading document {DocumentIndex} of {NumberOfDocuments} from partition {Index} ({PartitionId})",
+                            j, registeredEntities.Capacity, i, partitionId);
+                        await _container.UpsertItemAsync(registeredEntities[j], partitionKey, cancellationToken: cancellationToken);
+                    }
+                    continue;
+                }
+            
+                var batch = _container.CreateTransactionalBatch(partitionKey);
+                foreach (var registeredEntity in registeredEntities)
+                {
+                    batch.UpsertItem(registeredEntity);
+                }
+            
                 using var batchResponse = await batch.ExecuteAsync(cancellationToken);
                 if (!batchResponse.IsSuccessStatusCode)
                 {
                     throw new Exception($"Failed to store batch of entities. {batchResponse.StatusCode} - {batchResponse.ErrorMessage}");
                 }
             }
+
+            _logger.Information("Finished uploading batches of type {EntityType}", entityType);
         }
 
         private long SizeOf(RegisteredEntity item)
