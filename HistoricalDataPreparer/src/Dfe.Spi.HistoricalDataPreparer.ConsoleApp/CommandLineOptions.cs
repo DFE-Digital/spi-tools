@@ -1,3 +1,4 @@
+using System;
 using CommandLine;
 
 namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
@@ -33,5 +34,8 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
         
         [Option("spi-oauth-resource", Required = false, HelpText = "Resource for authentication")]
         public string SpiOAuthResource { get; set; }
+        
+        [Option("max-date", Required = false, HelpText = "Max date to process to")]
+        public DateTime? MaxDate { get; set; }
     }
 }

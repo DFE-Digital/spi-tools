@@ -31,12 +31,15 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
             _logger = logger;
         }
 
-        public async Task ProcessAvailableHistoricalDataAsync(CancellationToken cancellationToken)
+        public async Task ProcessAvailableHistoricalDataAsync(DateTime? maxDate, CancellationToken cancellationToken)
         {
+            var endDate = maxDate ?? DateTime.Today;
+            _logger.Information($"Processing historical data upto {endDate}");
+            
             var dateLastProcessed = await _appStateRepository.GetLastDateProcessedAsync(cancellationToken);
             var date = dateLastProcessed.Date.AddDays(1);
             _logger.Information("Starting at date {Date}", date.ToString("yyyy-MM-dd"));
-            while (date <= DateTime.Today && !cancellationToken.IsCancellationRequested)
+            while (date <= endDate && !cancellationToken.IsCancellationRequested)
             {
                 using (LogContext.PushProperty("Date", date.ToString("yyyy-MM-dd")))
                 {

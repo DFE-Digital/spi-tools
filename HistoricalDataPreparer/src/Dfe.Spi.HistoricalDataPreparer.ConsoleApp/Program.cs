@@ -61,7 +61,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
                 cancellationToken);
 
             // Run
-            await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
+            await processor.ProcessAvailableHistoricalDataAsync(options.MaxDate, cancellationToken);
             
             // Log stats
             logger.Information("Processed {NumberOfDays} days in {TotalDuration}", 
