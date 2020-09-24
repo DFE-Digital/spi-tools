@@ -14,5 +14,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Domain.Gias
         
         Task<LocalAuthority> GetLocalAuthorityAsync(int laCode, DateTime date, CancellationToken cancellationToken);
         Task StoreLocalAuthorityAsync(LocalAuthority localAuthority, DateTime date, CancellationToken cancellationToken);
+        
+        Task FlushAsync();
     }
 }

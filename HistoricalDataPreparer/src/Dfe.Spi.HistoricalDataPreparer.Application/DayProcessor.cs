@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing;
 using Dfe.Spi.HistoricalDataPreparer.Domain.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Domain.Registry;
@@ -23,9 +18,12 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
 
     public class DayProcessor : IDayProcessor
     {
-        private GiasChangeProcessor _giasChangeProcessor;
-        private UkrlpChangeProcessor _ukrlpChangeProcessor;
-        private RegistryChangeProcessor _registryChangeProcessor;
+        private readonly GiasChangeProcessor _giasChangeProcessor;
+        private readonly UkrlpChangeProcessor _ukrlpChangeProcessor;
+        private readonly RegistryChangeProcessor _registryChangeProcessor;
+        private readonly IPreparedGiasRepository _preparedGiasRepository;
+        private readonly IPreparedUkrlpRepository _preparedUkrlpRepository;
+        private readonly IPreparedRegistryRepository _preparedRegistryRepository;
         private readonly IStatisticsRepository _statisticsRepository;
         private readonly ILogger _logger;
 
@@ -45,6 +43,9 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
                 preparedUkrlpRepository,
                 translation, 
                 logger);
+            _preparedGiasRepository = preparedGiasRepository;
+            _preparedUkrlpRepository = preparedUkrlpRepository;
+            _preparedRegistryRepository = preparedRegistryRepository;
             _statisticsRepository = statisticsRepository;
             _logger = logger;
         }
@@ -69,6 +70,11 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
                 changedLocalAuthorities,
                 changedProviders,
                 cancellationToken);
+            
+            // Flush data
+            await _preparedGiasRepository.FlushAsync();
+            await _preparedUkrlpRepository.FlushAsync();
+            await _preparedRegistryRepository.FlushAsync();
             
             // Save stats
             var duration = DateTime.Now - startTime;

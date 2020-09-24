@@ -61,22 +61,27 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
             return _sourceEntityIndex[key][mostRecentDateBeforeRequested];
         }
 
-        public async Task AddRegisteredEntityIdAsync(RegisteredEntity registeredEntity, DateTime date, CancellationToken cancellationToken)
+        public void AddRegisteredEntityId(RegisteredEntity registeredEntity, DateTime date)
         {
             AddToSourceEntityIndex(registeredEntity, date);
 
             AddToEntityTypeIndex(registeredEntity);
-
-            await SaveAsync();
         }
 
-        public async Task DeleteRegisteredEntityIdAsync(string id, CancellationToken cancellationToken)
+        public void DeleteRegisteredEntityId(string id)
         {
             DeleteFromSourceEntityIndex(id);
             
             DeleteFromEntityTypeIndex(id);
-            
-            await SaveAsync();
+        }
+
+        public async Task FlushAsync()
+        {
+            var sourceEntityIndexJson = JsonConvert.SerializeObject(_sourceEntityIndex);
+            await FileHelper.WriteStringToFileAsync(_sourceEntityIndexPath, sourceEntityIndexJson);
+
+            var entityTypeIndexJson = JsonConvert.SerializeObject(_entityTypeIndex);
+            await FileHelper.WriteStringToFileAsync(_entityTypeIndexPath, entityTypeIndexJson);
         }
 
 

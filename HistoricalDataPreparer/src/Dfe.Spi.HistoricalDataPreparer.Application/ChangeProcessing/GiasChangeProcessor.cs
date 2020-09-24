@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dfe.Spi.HistoricalDataPreparer.Domain.Gias;
-using Dfe.Spi.HistoricalDataPreparer.Domain.Ukrlp;
 using Serilog;
 
 namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing

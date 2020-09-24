@@ -12,7 +12,6 @@ using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Statistics;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp;
-using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi.Translation;
 using Serilog;
 using Serilog.Events;

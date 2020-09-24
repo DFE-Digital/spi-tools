@@ -44,7 +44,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
             var json = JsonConvert.SerializeObject(storableEntity);
             await FileHelper.WriteStringToFileAsync(Path.Combine(_dataDirectory, $"{storableEntity.Id}.json"), json);
 
-            await _index.AddRegisteredEntityIdAsync(storableEntity, storableEntity.ValidFrom, cancellationToken);
+            _index.AddRegisteredEntityId(storableEntity, storableEntity.ValidFrom);
         }
 
         public async Task DeleteRegisteredEntity(string id, CancellationToken cancellationToken)
@@ -55,11 +55,15 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
                 fileInfo.Delete();
             }
 
-            await _index.DeleteRegisteredEntityIdAsync(id, cancellationToken);
+            _index.DeleteRegisteredEntityId(id);
         }
-        
-        
-        
+
+        public async Task FlushAsync()
+        {
+            await _index.FlushAsync();
+        }
+
+
         private CosmosRegisteredEntity Map(RegisteredEntity registeredEntity)
         {
             var partitionableId = registeredEntity.Entities.FirstOrDefault(e => e.Urn.HasValue)?.Urn?.ToString();

@@ -48,7 +48,12 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp
 
             await FileHelper.WriteStringToFileAsync(path, json);
 
-            await _providerIndex.AddDateToIndexAsync(provider.UnitedKingdomProviderReferenceNumber, date, cancellationToken);
+            _providerIndex.AddDateToIndex(provider.UnitedKingdomProviderReferenceNumber, date);
+        }
+
+        public async Task FlushAsync()
+        {
+            await _providerIndex.FlushAsync();
         }
     }
 }

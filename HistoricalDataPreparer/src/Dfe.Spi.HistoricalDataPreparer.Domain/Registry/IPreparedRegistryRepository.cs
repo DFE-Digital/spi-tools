@@ -16,5 +16,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Domain.Registry
         Task StoreRegisteredEntity(RegisteredEntity entity, DateTime dateTime, CancellationToken cancellationToken);
 
         Task DeleteRegisteredEntity(string id, CancellationToken cancellationToken);
+
+        Task FlushAsync();
     }
 }

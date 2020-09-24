@@ -43,7 +43,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem
                 .FirstOrDefault();
         }
 
-        public async Task AddDateToIndexAsync(TKey key, DateTime date, CancellationToken cancellationToken)
+        public void AddDateToIndex(TKey key, DateTime date)
         {
             if (!_index.ContainsKey(key))
             {
@@ -54,10 +54,13 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem
             if (!versions.Any(x => x == date))
             {
                 versions.Add(date);
-
-                var json = JsonConvert.SerializeObject(_index);
-                await FileHelper.WriteStringToFileAsync(_path, json);
             }
+        }
+
+        public async Task FlushAsync()
+        {
+            var json = JsonConvert.SerializeObject(_index);
+            await FileHelper.WriteStringToFileAsync(_path, json);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +54,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias
 
             await FileHelper.WriteStringToFileAsync(path, json);
 
-            await _establishmentIndex.AddDateToIndexAsync(establishment.Urn, date, cancellationToken);
+            _establishmentIndex.AddDateToIndex(establishment.Urn, date);
         }
         
 
@@ -82,7 +81,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias
 
             await FileHelper.WriteStringToFileAsync(path, json);
 
-            await _groupIndex.AddDateToIndexAsync(group.Uid, date, cancellationToken);
+            _groupIndex.AddDateToIndex(group.Uid, date);
         }
         
 
@@ -109,7 +108,14 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias
 
             await FileHelper.WriteStringToFileAsync(path, json);
 
-            await _localAuthorityIndex.AddDateToIndexAsync(localAuthority.Code, date, cancellationToken);
+            _localAuthorityIndex.AddDateToIndex(localAuthority.Code, date);
+        }
+
+        public async Task FlushAsync()
+        {
+            await _establishmentIndex.FlushAsync();
+            await _groupIndex.FlushAsync();
+            await _localAuthorityIndex.FlushAsync();
         }
     }
 }

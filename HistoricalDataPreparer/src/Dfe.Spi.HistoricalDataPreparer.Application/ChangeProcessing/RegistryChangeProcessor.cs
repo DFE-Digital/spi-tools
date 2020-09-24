@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Dfe.Spi.Common.WellKnownIdentifiers;

@@ -49,6 +49,8 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application
                     var ukrlpData = await ReadUkrlpData(date, cancellationToken);
 
                     await _dayProcessor.ProcessDaysDataAsync(date, giasData, ukrlpData, cancellationToken);
+                    
+                    
 
                     await _appStateRepository.SetLastDateProcessedAsync(date, cancellationToken);
                     date = date.AddDays(1);
