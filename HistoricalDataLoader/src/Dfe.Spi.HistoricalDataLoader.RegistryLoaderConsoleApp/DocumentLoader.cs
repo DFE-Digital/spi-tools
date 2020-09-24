@@ -48,7 +48,6 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
             var index = await LoadIndexAsync();
 
             var entityTypes = index.Keys
-                .Where(x=>x.Equals("management-group", StringComparison.InvariantCultureIgnoreCase)) //TODO: Remove
                 .OrderBy(x => x)
                 .ToArray();
             foreach (var entityType in entityTypes)
