@@ -55,7 +55,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
 
             var mostRecentDateBeforeRequested = _sourceEntityIndex[key]
                 .Keys.ToArray()
-                .Where(x => x <= date)
+                // .Where(x => x <= date) // Removed this as it might be causing issue, but data is processed in date order, so the most recent date will be the one we want
                 .OrderByDescending(x => x)
                 .First();
             return _sourceEntityIndex[key][mostRecentDateBeforeRequested];

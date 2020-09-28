@@ -37,7 +37,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
             return JsonConvert.DeserializeObject<RegisteredEntity>(json);
         }
 
-        public async Task StoreRegisteredEntity(RegisteredEntity entity, DateTime date, CancellationToken cancellationToken)
+        public async Task StoreRegisteredEntityAsync(RegisteredEntity entity, DateTime date, CancellationToken cancellationToken)
         {
             var storableEntity = Map(entity);
             
@@ -47,7 +47,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry
             _index.AddRegisteredEntityId(storableEntity, storableEntity.ValidFrom);
         }
 
-        public async Task DeleteRegisteredEntity(string id, CancellationToken cancellationToken)
+        public void DeleteRegisteredEntity(string id)
         {
             var fileInfo = new FileInfo(Path.Combine(_dataDirectory, $"{id}.json"));
             if (fileInfo.Exists)

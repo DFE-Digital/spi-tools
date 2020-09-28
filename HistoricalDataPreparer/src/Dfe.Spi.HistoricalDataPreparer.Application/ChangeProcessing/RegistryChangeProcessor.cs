@@ -100,11 +100,11 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                 if (previous != null)
                 {
                     previous.ValidTo = date;
-                    await _preparedRegistryRepository.StoreRegisteredEntity(previous, date, cancellationToken);
+                    await _preparedRegistryRepository.StoreRegisteredEntityAsync(previous, date, cancellationToken);
                     changes.Add(previous);
                 }
 
-                await _preparedRegistryRepository.StoreRegisteredEntity(latest, date, cancellationToken);
+                await _preparedRegistryRepository.StoreRegisteredEntityAsync(latest, date, cancellationToken);
                 changes.Add(latest);
 
                 _logger.Information(
@@ -139,7 +139,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                 if (previous != null)
                 {
                     previous.ValidTo = date;
-                    await _preparedRegistryRepository.StoreRegisteredEntity(previous, date, cancellationToken);
+                    await _preparedRegistryRepository.StoreRegisteredEntityAsync(previous, date, cancellationToken);
                     changes.Add(previous);
 
                     latest.Entities =
@@ -169,7 +169,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                                 },
                             })
                             .ToArray();
-                        await _preparedRegistryRepository.StoreRegisteredEntity(managementGroup, date, cancellationToken);
+                        await _preparedRegistryRepository.StoreRegisteredEntityAsync(managementGroup, date, cancellationToken);
                         changes.Add(managementGroup);
 
                         latest.Links = new[]
@@ -196,12 +196,12 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                     {
                         if (ukrlpEntity.ValidFrom == date)
                         {
-                            await _preparedRegistryRepository.DeleteRegisteredEntity(ukrlpEntity.Id, cancellationToken);
+                            _preparedRegistryRepository.DeleteRegisteredEntity(ukrlpEntity.Id);
                         }
                         else
                         {
                             ukrlpEntity.ValidTo = date;
-                            await _preparedRegistryRepository.StoreRegisteredEntity(ukrlpEntity, date, cancellationToken);
+                            await _preparedRegistryRepository.StoreRegisteredEntityAsync(ukrlpEntity, date, cancellationToken);
                         }
 
                         latest.Entities = latest.Entities.Concat(ukrlpEntity.Entities).ToArray();
@@ -218,7 +218,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                     }
                 }
 
-                await _preparedRegistryRepository.StoreRegisteredEntity(latest, date, cancellationToken);
+                await _preparedRegistryRepository.StoreRegisteredEntityAsync(latest, date, cancellationToken);
                 changes.Add(latest);
 
                 _logger.Information(
@@ -240,7 +240,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
             {
                 var provider = changedProviders[i];
                 var entity = await MapToEntityAsync(provider, cancellationToken);
-                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.Type, entity.SourceSystemName,
+                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.EntityType, entity.SourceSystemName,
                     entity.SourceSystemId, date, cancellationToken);
                 var latest = new RegisteredEntity
                 {
@@ -249,11 +249,14 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                     ValidFrom = date,
                     Entities = new[] {entity},
                 };
+                
+                _logger.Debug("Processing change for provider {UKPRN} on {Date}. Latest document id {LatestId}. Previous document id {PreviousId}",
+                    entity.SourceSystemId, date, latest.Id, previous?.Id);
 
                 if (previous != null)
                 {
                     previous.ValidTo = date;
-                    await _preparedRegistryRepository.StoreRegisteredEntity(previous, date, cancellationToken);
+                    await _preparedRegistryRepository.StoreRegisteredEntityAsync(previous, date, cancellationToken);
                     changes.Add(previous);
 
                     latest.Entities =
@@ -261,9 +264,6 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                             .Concat(previous.Entities.Where(e => e.SourceSystemName != entity.SourceSystemName))
                             .ToArray();
                     latest.Links = previous.Links;
-
-                    await _preparedRegistryRepository.StoreRegisteredEntity(latest, date, cancellationToken);
-                    changes.Add(latest);
                 }
 
                 if (latest.Entities.Length == 1 && entity.Urn.HasValue)
@@ -274,12 +274,12 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                     {
                         if (giasEntity.ValidFrom == date)
                         {
-                            await _preparedRegistryRepository.DeleteRegisteredEntity(giasEntity.Id, cancellationToken);
+                            _preparedRegistryRepository.DeleteRegisteredEntity(giasEntity.Id);
                         }
                         else
                         {
                             giasEntity.ValidTo = date;
-                            await _preparedRegistryRepository.StoreRegisteredEntity(giasEntity, date, cancellationToken);
+                            await _preparedRegistryRepository.StoreRegisteredEntityAsync(giasEntity, date, cancellationToken);
                         }
 
                         latest.Entities = latest.Entities.Concat(giasEntity.Entities).ToArray();
@@ -296,7 +296,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                     }
                 }
 
-                await _preparedRegistryRepository.StoreRegisteredEntity(latest, date, cancellationToken);
+                await _preparedRegistryRepository.StoreRegisteredEntityAsync(latest, date, cancellationToken);
                 changes.Add(latest);
 
                 _logger.Information(
@@ -387,6 +387,8 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
             // Build entity provider details
             var entity = new LinkedEntity
             {
+                LinkedAt = DateTime.Now,
+                LinkedBy = "HistoricalDataPreparer",
                 EntityType = EntityTypeLearningProvider,
                 SourceSystemName = SourceSystemNames.GetInformationAboutSchools,
                 SourceSystemId = establishment.Urn.ToString(),
