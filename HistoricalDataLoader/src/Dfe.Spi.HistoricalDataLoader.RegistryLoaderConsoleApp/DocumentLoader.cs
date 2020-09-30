@@ -112,7 +112,7 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
                     {
                         _logger.Debug("Uploading document {DocumentIndex} of {NumberOfDocuments} from partition {Index} ({PartitionId})",
                             j, registeredEntities.Capacity, i, partitionId);
-                        await _container.UpsertItemAsync(registeredEntities[j], partitionKey, cancellationToken: cancellationToken);
+                        await UpsertItemAsync(registeredEntities[j], partitionKey, cancellationToken: cancellationToken);
                     }
                     continue;
                 }
@@ -131,6 +131,32 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
             }
 
             _logger.Information("Finished uploading batches of type {EntityType}", entityType);
+        }
+
+        private async Task UpsertItemAsync(CosmosRegisteredEntity entity, PartitionKey partitionKey, CancellationToken cancellationToken)
+        {
+            var attempt = 0;
+            Exception lastException = null;
+            while (attempt < 3)
+            {
+                try
+                {
+                    await _container.UpsertItemAsync(entity, partitionKey, cancellationToken: cancellationToken);
+                    return;
+                }
+                catch (CosmosException ex)
+                {
+                    lastException = ex;
+                    if ((int) ex.StatusCode == 408)
+                    {
+                        _logger.Warning($"Attempt {attempt + 1} of {entity} timed out");
+                    }
+                }
+
+                attempt++;
+            }
+            
+            throw new Exception($"Failed to upload after 3 attempts. Last exception: {lastException?.Message}", lastException);
         }
 
         private long SizeOf(RegisteredEntity item)
