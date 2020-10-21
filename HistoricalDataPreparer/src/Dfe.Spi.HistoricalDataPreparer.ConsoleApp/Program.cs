@@ -12,7 +12,6 @@ using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Gias;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Registry;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Statistics;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.FileSystem.Ukrlp;
-using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi;
 using Dfe.Spi.HistoricalDataPreparer.Infrastructure.SpiApi.Translation;
 using Serilog;
 using Serilog.Events;
@@ -61,7 +60,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.ConsoleApp
                 cancellationToken);
 
             // Run
-            await processor.ProcessAvailableHistoricalDataAsync(cancellationToken);
+            await processor.ProcessAvailableHistoricalDataAsync(options.MaxDate, cancellationToken);
             
             // Log stats
             logger.Information("Processed {NumberOfDays} days in {TotalDuration}", 

@@ -8,5 +8,6 @@ namespace Dfe.Spi.HistoricalDataPreparer.Domain.Ukrlp
     {
         Task<Provider> GetProviderAsync(long ukprn, DateTime date, CancellationToken cancellationToken);
         Task StoreProviderAsync(Provider provider, DateTime date, CancellationToken cancellationToken);
+        Task FlushAsync();
     }
 }

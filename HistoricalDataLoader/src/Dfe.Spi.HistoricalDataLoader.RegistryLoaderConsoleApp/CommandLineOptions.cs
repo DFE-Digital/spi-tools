@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CommandLine;
 
 namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
@@ -24,5 +25,8 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
         
         [Option("cosmos-container", Required = true, HelpText = "Container name in the Cosmos instance")]
         public string CosmosContainerName { get; set; }
+        
+        [Option("exclude-types", Required = false, HelpText = "Entity type to exclude. Separated by comma is multiple")]
+        public string TypesToExclude { get; set; }
     }
 }
