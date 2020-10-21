@@ -30,7 +30,13 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
                 options.CosmosDatabaseName, 
                 options.CosmosContainerName,
                 logger);
-            await documents.LoadAsync(cancellationToken);
+
+            var typesToExclude = (options.TypesToExclude ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .ToArray();
+            
+            await documents.LoadAsync(typesToExclude, cancellationToken);
         }
 
         static void Main(string[] args)

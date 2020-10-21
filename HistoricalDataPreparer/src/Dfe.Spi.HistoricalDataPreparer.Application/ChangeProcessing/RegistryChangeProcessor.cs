@@ -86,7 +86,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
             for (var i = 0; i < entities.Count; i++)
             {
                 var entity = entities[i];
-                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.Type, entity.SourceSystemName,
+                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.EntityType, entity.SourceSystemName,
                     entity.SourceSystemId, date, cancellationToken);
                 var latest = new RegisteredEntity
                 {
@@ -126,7 +126,7 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
             {
                 var establishment = changedEstablishments[i];
                 var entity = await MapToEntityAsync(establishment, date, cancellationToken);
-                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.Type, entity.SourceSystemName,
+                var previous = await _preparedRegistryRepository.GetRegisteredEntityAsync(entity.EntityType, entity.SourceSystemName,
                     entity.SourceSystemId, date, cancellationToken);
                 var latest = new RegisteredEntity
                 {
