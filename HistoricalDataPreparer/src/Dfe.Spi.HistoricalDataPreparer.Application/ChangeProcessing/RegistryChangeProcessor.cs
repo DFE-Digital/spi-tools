@@ -146,7 +146,66 @@ namespace Dfe.Spi.HistoricalDataPreparer.Application.ChangeProcessing
                         latest.Entities
                             .Concat(previous.Entities.Where(e => e.SourceSystemName != entity.SourceSystemName))
                             .ToArray();
-                    latest.Links = previous.Links;
+                    //latest.Links = previous.Links;
+                    var previousLinks = (previous.Links ?? new Link[0]).Where(l => !l.SourceSystemId.StartsWith("SingleAcademyTrust") && !l.SourceSystemId.StartsWith("MultiAcademyTrust") && !l.SourceSystemId.StartsWith("Trust") && !l.SourceSystemId.StartsWith("LocalAuthority"));
+                    latest.Links = (previousLinks ?? new Link[0])
+                    .Concat(new[]
+                        {
+                            new Link
+                            {
+                                EntityType = EntityTypeManagementGroup,
+                                SourceSystemName = SourceSystemNames.GetInformationAboutSchools,
+                                SourceSystemId = entity.ManagementGroupCode,
+                                LinkedAt = DateTime.Now,
+                                LinkedBy = "HistoricalDataPreparer",
+                                LinkedReason = "Matching management group code",
+                                LinkType = LinkTypeManagementGroup,
+                            },
+                        }).ToArray();
+
+                    //Check if the management group has changed
+                    var previousManagementGroupId = (previous.Links ?? new Link[0]).FirstOrDefault(l => l.SourceSystemId.StartsWith("SingleAcademyTrust") || l.SourceSystemId.StartsWith("MultiAcademyTrust") || l.SourceSystemId.StartsWith("Trust") || l.SourceSystemId.StartsWith("LocalAuthority"))?.SourceSystemId;
+
+                    if (previousManagementGroupId != entity.ManagementGroupCode)
+                    {
+                        //Update record of previous management group to remove the link to the current entity
+                        var previousManagementGroup = await _preparedRegistryRepository.GetRegisteredEntityAsync(EntityTypeManagementGroup,
+                        SourceSystemNames.GetInformationAboutSchools, previousManagementGroupId, date, cancellationToken);
+                        if (previousManagementGroup != null && !previousManagementGroupId.StartsWith("LocalAuthority"))
+                        {
+                            previousManagementGroup.Links = previousManagementGroup.Links.Where(l => l.SourceSystemId != entity.SourceSystemId).ToArray();
+                            if (previousManagementGroup.Links.Length == 0)
+                            {
+                                previousManagementGroup.Links = null;
+                            }
+                            await _preparedRegistryRepository.StoreRegisteredEntityAsync(previousManagementGroup, date, cancellationToken);
+                            changes.Add(previousManagementGroup);
+                        }
+
+                        //Add a link to the record of the new management group for the current entity
+                        var managementGroup = await _preparedRegistryRepository.GetRegisteredEntityAsync(EntityTypeManagementGroup,
+                            SourceSystemNames.GetInformationAboutSchools, entity.ManagementGroupCode, date, cancellationToken);
+                        if (managementGroup != null)
+                        {
+                            managementGroup.Links = (managementGroup.Links ?? new Link[0])
+                                .Concat(new[]
+                                {
+                                new Link
+                                {
+                                    EntityType = entity.EntityType,
+                                    SourceSystemName = entity.SourceSystemName,
+                                    SourceSystemId = entity.SourceSystemId,
+                                    LinkedAt = DateTime.Now,
+                                    LinkedBy = "HistoricalDataPreparer",
+                                    LinkedReason = "Matching management group code",
+                                    LinkType = LinkTypeManagementGroup,
+                                },
+                                })
+                                .ToArray();
+                            await _preparedRegistryRepository.StoreRegisteredEntityAsync(managementGroup, date, cancellationToken);
+                            changes.Add(managementGroup);
+                        }
+                    }
                 }
                 else
                 {
