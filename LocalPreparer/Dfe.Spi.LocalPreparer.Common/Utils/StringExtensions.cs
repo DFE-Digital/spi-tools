@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 
 
 namespace Dfe.Spi.LocalPreparer.Common.Utils
@@ -16,9 +10,8 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
 
         public static string? GetAppVersion()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fileVersionInfo.ProductVersion;
+            return $"{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
+
         }
 
         public static bool EndsWith(this StringBuilder sb, string test)

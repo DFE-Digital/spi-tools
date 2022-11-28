@@ -10,7 +10,7 @@
         EventBroker = 4,
         EntitySquasher = 5,
         Registry = 6,
-        GraphQL = 7
+        GraphQlApi = 7
     }
 
 }
