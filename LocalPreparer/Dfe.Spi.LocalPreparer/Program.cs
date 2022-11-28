@@ -129,7 +129,7 @@ namespace Dfe.Spi.LocalPreparer
             }
             fileSystemService.CopySettingFiles(projectName, projectPath);
 
-            GoBack("Press Enter to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+            GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
         }
 
 
@@ -138,21 +138,21 @@ namespace Dfe.Spi.LocalPreparer
             var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
             await azureStorageService.CopyTableToBlobAsync(serviceName);
             await azureStorageService.CopyBlobToTableAsync(serviceName);
-            GoBack("Press Enter to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+            GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
         }
 
         public static async Task ExecuteCreateQueues(ServiceName serviceName)
         {
             var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
             await azureStorageService.CreateQueuesAsync(serviceName);
-            GoBack("Press Enter to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+            GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
         }
 
         public static async Task ExecuteCopyBlobs(ServiceName serviceName)
         {
             var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
             await azureStorageService.CopyBlobAsync(serviceName);
-            GoBack("Press Enter to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+            GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
         }
 
 
@@ -161,13 +161,8 @@ namespace Dfe.Spi.LocalPreparer
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine($"{Environment.NewLine}{prompt}{Environment.NewLine}");
             Console.ResetColor();
-
-            var keyInfo = Console.ReadKey(true);
-            var keyPressed = keyInfo.Key;
-            if (keyPressed == ConsoleKey.Enter)
-            {
-                enterAction.Invoke();
-            }
+            Console.ReadKey();
+            enterAction.Invoke();
         }
 
 
