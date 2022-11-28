@@ -1,0 +1,25 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SPI_Authentication__ClientId": "",
+    "SPI_Authentication__ClientSecret": "",
+    "SPI_Authentication__Resource": "",
+    "SPI_Authentication__SubscriptionKey": "",
+    "SPI_Authentication__TokenEndpoint": "",
+    "SPI_Distribution__StorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Distribution__StorageTableName": "distributions",
+    "SPI_Event__StorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Event__StorageContainerName": "events",
+    "SPI_Event__StorageFolderName": "",
+    "SPI_Publisher__StorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Publisher__StorageContainerName": "publishers",
+    "SPI_Publisher__StorageFolderName": "",
+    "SPI_Subscription__StorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Subscription__StorageTableName": "subscriptions",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+  },
+  "ConnectionStrings": {}
+}

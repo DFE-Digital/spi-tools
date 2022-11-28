@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SPI_Sync__QueueConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Data__CosmosDbUri": "https://localhost:8081",
+    "SPI_Data__CosmosDbKey": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
+    "SPI_Data__DatabaseName": "spi-registry",
+    "SPI_Data__ContainerName": "registered-entities"
+  },
+  "ConnectionStrings": {}
+}
