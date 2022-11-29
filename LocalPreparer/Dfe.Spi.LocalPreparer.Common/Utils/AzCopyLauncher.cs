@@ -7,15 +7,15 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
     public static class AzCopyLauncher
     {
 
-        public static bool Run<T>(string arguments, ILogger<T> _logger)
+        public static async Task<bool> RunAsync<T>(string arguments, ILogger<T> _logger)
         {
             _logger.LogWarning($"Start of AzCopy logs...{Environment.NewLine}");
             // making sure no other process is running
-            Process[] ps = Process.GetProcessesByName("azcopy");
+            var ps = Process.GetProcessesByName("azcopy");
             foreach (Process p in ps)
                 p.Kill();
             var tempJournalPath = Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "AzCopy", "Temp", $"{Guid.NewGuid()}"));
-            var succeeded = StartAzCopyAsync($"{arguments} /Z:{tempJournalPath}", _logger);
+            var succeeded = await StartAzCopyAsync($"{arguments} /Z:{tempJournalPath}", _logger);
 
             _logger.LogWarning($"End of AzCopy logs...{Environment.NewLine}");
 
@@ -23,9 +23,12 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
 
         }
 
-        private static bool StartAzCopyAsync<T>(string arguments, ILogger<T> _logger, CancellationToken cancellationToken = default)
+        private static async Task<bool> StartAzCopyAsync<T>(string arguments, ILogger<T> _logger, CancellationToken cancellationToken = default)
         {
-            var failed = false;
+            await Task.Run(() =>
+            {
+
+                var failed = false;
                 var azCopyPath = Path.Combine(Directory.GetCurrentDirectory(), "AzCopy", "AzCopy.exe");
                 var proc = new Process
                 {
@@ -64,6 +67,7 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
                         proc.StandardInput.Write("Yes");
                     }
                 }
+
                 proc.BeginErrorReadLine();
                 proc.ErrorDataReceived += (sender, e) =>
                 {
@@ -73,9 +77,11 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
                         failed = true;
                     }
                 };
-            
-            proc.WaitForExit();
-            return !failed;
+
+                proc.WaitForExit();
+                return !failed;
+            });
+            return true;
         }
 
         private static string? PrepareAzCopyLog(string value)
