@@ -4,5 +4,5 @@ namespace Dfe.Spi.LocalPreparer.Azure;
 
 public interface IAzureAuthenticationService
 {
-    AzureClientContext? AuthenticateAsync();
+    Task<AzureClientContext?> AuthenticateAsync();
 }

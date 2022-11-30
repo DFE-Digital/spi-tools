@@ -21,9 +21,9 @@ public static class StringExtensions
                sb.ToString().EndsWith(test);
     }
 
-    public static string ToResourceGroup(this string storageAccountName)
+    public static string ToResourceGroup(this string storageAccountName, string envPrefix)
     {
-        var length = Constants.AzureEnvironmentId.Length;
+        var length = envPrefix.Length;
         return storageAccountName.Insert(length, "-");
     }
 

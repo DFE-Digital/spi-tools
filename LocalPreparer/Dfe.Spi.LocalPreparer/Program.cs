@@ -169,9 +169,11 @@ internal class Program
     {
         Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"{Environment.NewLine+ Environment.NewLine}Authenticating with Azure....");
+        Console.WriteLine($"{Environment.NewLine}Please check your browser to authenticate with Azure!");
         Console.ResetColor();
+        Thread.Sleep(2000);
         var azureAuthenticationService = IoC.Services.GetService<IAzureAuthenticationService>();
-        var context = azureAuthenticationService.AuthenticateAsync();
+        var context = await azureAuthenticationService.AuthenticateAsync();
         if (context == null) return false;
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"Authentication successful!");

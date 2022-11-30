@@ -258,7 +258,7 @@ public class AzureStorageService : IAzureStorageService
 
                 var accountName = _configuration.Value.Services?.GetValueOrDefault(serviceName)
                     ?.RemoteStorageAccountName;
-                var resourceGroupName = accountName?.ToResourceGroup();
+                var resourceGroupName = accountName?.ToResourceGroup(_configuration.Value.Azure.AzureEnvironmentPrefix);
                 var subscription = _azureClientContextManager.AzureClientContext.SubscriptionResource;
                 var resourceGroups = subscription.GetResourceGroups();
                 ResourceGroupResource resourceGroup = await resourceGroups.GetAsync(resourceGroupName);

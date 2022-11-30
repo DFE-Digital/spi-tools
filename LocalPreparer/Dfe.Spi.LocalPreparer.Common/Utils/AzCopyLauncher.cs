@@ -15,7 +15,7 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
             foreach (Process p in ps)
                 p.Kill();
             var tempJournalPath = Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "AzCopy", "Temp", $"{Guid.NewGuid()}"));
-            var succeeded = await StartAzCopyAsync($"{arguments} /Z:{tempJournalPath}", _logger);
+            var succeeded = await StartAzCopyAsync($"{arguments} /Z:\"{tempJournalPath}\"", _logger);
 
             _logger.LogWarning($"End of AzCopy logs...{Environment.NewLine}");
 

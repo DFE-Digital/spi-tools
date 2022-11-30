@@ -1,6 +1,8 @@
 ﻿using Azure.Core;
+using Azure.Core.Diagnostics;
 using Azure.Identity;
 using Azure.ResourceManager;
+using Azure.ResourceManager.Resources;
 using Dfe.Spi.LocalPreparer.Common.Configurations;
 using Dfe.Spi.LocalPreparer.Common.Enums;
 using Dfe.Spi.LocalPreparer.Common.Model;
@@ -22,13 +24,30 @@ public class AzureAuthenticationService : IAzureAuthenticationService
         _logger = logger;
     }
 
-    public AzureClientContext? AuthenticateAsync()
+    public async Task<AzureClientContext?> AuthenticateAsync()
     {
         try
         {
-            var client = new ArmClient(new DefaultAzureCredential(true));
+            ResourceIdentifier id = new ResourceIdentifier($"/subscriptions/{_configuration.Value.Azure.SubscriptionId}");
+            // uncomment for detailed authentication process
+            //using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsoleLogger();
+            var authOptions = new DefaultAzureCredentialOptions
+            {
+                ExcludeEnvironmentCredential = true,
+                ExcludeAzureCliCredential = true,
+                ExcludeAzurePowerShellCredential = true,
+                ExcludeManagedIdentityCredential = true,
+                ExcludeSharedTokenCacheCredential = true,
+                ExcludeVisualStudioCodeCredential = true,
+                ExcludeVisualStudioCredential = true,
+                ExcludeInteractiveBrowserCredential = false,
+                TenantId = _configuration.Value.Azure.TenantId.ToString()
+            };
+            var client = new ArmClient(new DefaultAzureCredential(authOptions));
+
             var subscriptions = client.GetSubscriptions();
-            var subscription = subscriptions.Get(_configuration.Value.Azure.SubscriptionId.ToString()).Value;
+            SubscriptionResource subscription = await subscriptions.GetAsync(id.SubscriptionId);
+
             var context = new AzureClientContext()
             {
                 ArmClient = client,
@@ -42,6 +61,7 @@ public class AzureAuthenticationService : IAzureAuthenticationService
         catch (Exception e)
         {
            _logger.LogError($"Azure authentication failed! {Environment.NewLine} {e}");
+           Console.ReadLine();
            return null;
         }
     }

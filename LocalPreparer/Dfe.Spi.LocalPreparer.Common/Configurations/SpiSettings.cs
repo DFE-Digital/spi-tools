@@ -25,4 +25,6 @@ public class ServiceSettings
 public class AzureSettings
 {
     public Guid SubscriptionId { get; set; }
+    public Guid TenantId { get; set; }
+    public string AzureEnvironmentPrefix { get; set; }
 }
