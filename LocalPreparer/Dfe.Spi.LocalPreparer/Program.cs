@@ -1,4 +1,5 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Enums;
+﻿using Dfe.Spi.LocalPreparer.Azure;
+using Dfe.Spi.LocalPreparer.Common.Enums;
 using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Common.Utils;
 using Dfe.Spi.LocalPreparer.Services;
@@ -55,20 +56,19 @@ internal class Program
 
         Console.ResetColor();
         Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.WriteLine("Welcome to Dfe.Spi Local Preparer Tool!" + Environment.NewLine, Console.ForegroundColor);
+        Console.WriteLine("Dfe.Spi Local Preparer Tool!" + Environment.NewLine, Console.ForegroundColor);
         Console.ResetColor();
-        Thread.Sleep(2000);
-        await ServiceListAsync();
+        await AuthenticateAsync();
     }
 
-    public static async Task ServiceListAsync()
+    private static async Task ServiceListAsync()
     {
         var selectedService = SelectService();
         await ServiceSubmenuAsync(selectedService);
     }
 
 
-    public static ServiceName SelectService()
+    private static ServiceName SelectService()
     {
         var services = Enum.GetValues(typeof(ServiceName)).Cast<ServiceName>()
            .ToDictionary(t => t.ToString(), t => (int)t);
@@ -80,7 +80,7 @@ internal class Program
         return serviceName;
     }
 
-    public static async Task ServiceSubmenuAsync(ServiceName serviceName)
+    private static async Task ServiceSubmenuAsync(ServiceName serviceName)
     {
         var submenuItems = new Dictionary<string, int>
             {
@@ -114,7 +114,7 @@ internal class Program
         }
     }
 
-    public static async Task ExecuteCopySettingFilesAsync(ServiceName serviceName)
+    private static async Task ExecuteCopySettingFilesAsync(ServiceName serviceName)
     {
         var fileSystemService = IoC.Services.GetService<IFileSystemService>();
 
@@ -132,7 +132,7 @@ internal class Program
     }
 
 
-    public static async Task ExecuteCopyTable(ServiceName serviceName)
+    private static async Task ExecuteCopyTable(ServiceName serviceName)
     {
         var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
         await azureStorageService.CopyTableToBlobAsync(serviceName);
@@ -141,14 +141,14 @@ internal class Program
 
     }
 
-    public static async Task ExecuteCreateQueues(ServiceName serviceName)
+    private static async Task ExecuteCreateQueues(ServiceName serviceName)
     {
         var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
         await azureStorageService.CreateQueuesAsync(serviceName);
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
     }
 
-    public static async Task ExecuteCopyBlobs(ServiceName serviceName)
+    private static async Task ExecuteCopyBlobs(ServiceName serviceName)
     {
         var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
         await azureStorageService.CopyBlobAsync(serviceName);
@@ -156,7 +156,7 @@ internal class Program
     }
 
 
-    public static async Task GoBack(string prompt, Func<Task> enterAction)
+    private static async Task GoBack(string prompt, Func<Task> enterAction)
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"{Environment.NewLine}{prompt}{Environment.NewLine}");
@@ -165,6 +165,21 @@ internal class Program
         await enterAction.Invoke();
     }
 
+    private static async Task<bool> AuthenticateAsync()
+    {
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine($"{Environment.NewLine+ Environment.NewLine}Authenticating with Azure....");
+        Console.ResetColor();
+        var azureAuthenticationService = IoC.Services.GetService<IAzureAuthenticationService>();
+        var context = azureAuthenticationService.AuthenticateAsync();
+        if (context == null) return false;
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Authentication successful!");
+        Console.WriteLine($"Active subscription Id: {context.SubscriptionId}");
+        Console.ResetColor();
+        await GoBack("Press any key to continue...", async () => await ServiceListAsync());
+        return true;
+    }
 
 
 }

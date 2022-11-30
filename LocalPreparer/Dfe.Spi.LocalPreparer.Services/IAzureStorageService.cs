@@ -8,4 +8,5 @@ public interface IAzureStorageService
     Task CopyBlobToTableAsync(ServiceName serviceName);
     Task CopyTableToBlobAsync(ServiceName serviceName);
     Task CreateQueuesAsync(ServiceName serviceName);
+    Task<string?> GetAzureStorageKeyAsync(ServiceName serviceName);
 }

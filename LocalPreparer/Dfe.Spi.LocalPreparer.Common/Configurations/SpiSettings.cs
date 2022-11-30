@@ -1,11 +1,10 @@
 ﻿using Dfe.Spi.LocalPreparer.Common.Enums;
-
-
 namespace Dfe.Spi.LocalPreparer.Common.Configurations;
 
 public class SpiSettings
 {
     public Dictionary<ServiceName, ServiceSettings>? Services { get; set; }
+    public AzureSettings Azure { get; set; }
 }
 
 public class ServiceSettings
@@ -21,6 +20,9 @@ public class ServiceSettings
     public Uri? LocalStorageBlobEndpoint { get; set; }
     public Uri? LocalStorageTableEndpoint { get; set; }
     public Uri? LocalStorageQueueEndpoint { get; set; }
-
 }
 
+public class AzureSettings
+{
+    public Guid SubscriptionId { get; set; }
+}

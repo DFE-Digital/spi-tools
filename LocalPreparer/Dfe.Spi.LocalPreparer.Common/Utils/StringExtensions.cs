@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using Dfe.Spi.LocalPreparer.Common.Configurations;
+
 namespace Dfe.Spi.LocalPreparer.Common.Utils;
 public static class StringExtensions
 {
@@ -17,6 +19,12 @@ public static class StringExtensions
     {
         return sb.Length >= test.Length &&
                sb.ToString().EndsWith(test);
+    }
+
+    public static string ToResourceGroup(this string storageAccountName)
+    {
+        var length = Constants.AzureEnvironmentId.Length;
+        return storageAccountName.Insert(length, "-");
     }
 
 }

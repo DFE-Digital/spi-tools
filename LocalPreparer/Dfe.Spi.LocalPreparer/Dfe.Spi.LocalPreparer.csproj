@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <Version>1.0.2</Version>
-	  <AssemblyVersion>1.0.2</AssemblyVersion>
-	  <FileVersion>1.0.2</FileVersion>
+	  <Version>1.1.0</Version>
+	  <AssemblyVersion>1.1.0</AssemblyVersion>
+	  <FileVersion>1.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Azure\Dfe.Spi.LocalPreparer.Azure.csproj" />
     <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Common\Dfe.Spi.LocalPreparer.Common.csproj" />
     <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Services\Dfe.Spi.LocalPreparer.Services.csproj" />
   </ItemGroup>
@@ -92,5 +93,7 @@
   <ItemGroup>
     <Folder Include="AzCopy\Journal\" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="https://json.schemastore.org/avro-avsc.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -8,16 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.8.0" />
-    <PackageReference Include="Azure.ResourceManager.Storage" Version="1.0.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.14.1" />
-    <PackageReference Include="Azure.Storage.Queues" Version="12.12.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
-    <PackageReference Include="Microsoft.PowerShell.Native" Version="7.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Azure\Dfe.Spi.LocalPreparer.Azure.csproj" />
     <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Common\Dfe.Spi.LocalPreparer.Common.csproj" />
   </ItemGroup>
 

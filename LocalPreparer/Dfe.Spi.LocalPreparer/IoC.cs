@@ -1,4 +1,5 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Configurations;
+﻿using Dfe.Spi.LocalPreparer.Azure;
+using Dfe.Spi.LocalPreparer.Common.Configurations;
 using Dfe.Spi.LocalPreparer.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,8 @@ public static class IoC
         IServiceCollection services = new ServiceCollection();
         services.AddTransient<IFileSystemService, FileSystemService>();
         services.AddTransient<IAzureStorageService, AzureStorageService>();
-
+        services.AddTransient<IAzureAuthenticationService, AzureAuthenticationService>();
+        services.AddSingleton<IAzureClientContextManager, AzureClientContextManager>();
         services.Configure<SpiSettings>(configuration.GetSection("SpiSettings"));
 
         services.AddOptions();
@@ -21,4 +23,3 @@ public static class IoC
         Services = services.BuildServiceProvider();
     }
 }
-
