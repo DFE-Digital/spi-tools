@@ -1,4 +1,5 @@
 ﻿using Dfe.Spi.LocalPreparer.Azure;
+using Dfe.Spi.LocalPreparer.Common.Configurations;
 using Dfe.Spi.LocalPreparer.Common.Enums;
 using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Common.Utils;
@@ -6,6 +7,7 @@ using Dfe.Spi.LocalPreparer.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Dfe.Spi.LocalPreparer;
@@ -43,18 +45,7 @@ internal class Program
 
     private static async Task InitAsync()
     {
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($@"
-  _____   __        _____       _ 
- |  __ \ / _|      / ____|     (_)
- | |  | | |_ ___  | (___  _ __  _ 
- | |  | |  _/ _ \  \___ \| '_ \| |
- | |__| | ||  __/_ ____) | |_) | |
- |_____/|_| \___(_)_____/| .__/|_|
-                         | |      
-                         |_|          ver{StringExtensions.GetAppVersion()}", Console.ForegroundColor);
-
-        Console.ResetColor();
+        Logo.Display();
         Console.ForegroundColor = ConsoleColor.DarkYellow;
         Console.WriteLine("Dfe.Spi Local Preparer Tool!" + Environment.NewLine, Console.ForegroundColor);
         Console.ResetColor();
@@ -82,14 +73,7 @@ internal class Program
 
     private static async Task ServiceSubmenuAsync(ServiceName serviceName)
     {
-        var submenuItems = new Dictionary<string, int>
-            {
-                { "Copy setting files", 0 },
-                { "Copy Azure Storage tables", 1 },
-                { "Copy Azure Storage queues", 2 },
-                { "Copy Azure Storage blobs", 3 },
-                { "Go back", 4 }
-            };
+        var submenuItems = CreateServiceSubmenu(serviceName);
 
         var subMenu = new Navigation<int>(submenuItems, $"Please select an operation for service: {serviceName}!");
         var selectedItem = subMenu.Run(true);
@@ -168,8 +152,8 @@ internal class Program
     private static async Task<bool> AuthenticateAsync()
     {
         Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($"{Environment.NewLine+ Environment.NewLine}Authenticating with Azure....");
-        Console.WriteLine($"{Environment.NewLine}Please check your browser to authenticate with Azure!");
+        Console.WriteLine($"{Environment.NewLine + Environment.NewLine}Authenticating with Azure....");
+        Console.WriteLine($"{Environment.NewLine}Please check your browser to authenticate using your Azure credentials!");
         Console.ResetColor();
         Thread.Sleep(2000);
         var azureAuthenticationService = IoC.Services.GetService<IAzureAuthenticationService>();
@@ -177,11 +161,32 @@ internal class Program
         if (context == null) return false;
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"Authentication successful!");
-        Console.WriteLine($"Active subscription Id: {context.SubscriptionId}");
+        Console.WriteLine($"Active subscription: {context.SubscriptionName} ({context.SubscriptionId})");
         Console.ResetColor();
         await GoBack("Press any key to continue...", async () => await ServiceListAsync());
         return true;
     }
 
+    private static Dictionary<string, int> CreateServiceSubmenu(ServiceName serviceName)
+    {
+        var submenuItems = new Dictionary<string, int>();
+        var _configurations = IoC.Services.GetService<IOptions<SpiSettings>>();
+
+        var tables = _configurations.Value.Services?.GetValueOrDefault(serviceName).Tables;
+        var queues = _configurations.Value.Services?.GetValueOrDefault(serviceName).Queues;
+        var blobs = _configurations.Value.Services?.GetValueOrDefault(serviceName).BlobContainers;
+
+        submenuItems.Add("Copy setting files", 0);
+
+        if (tables != null && tables.Any())
+            submenuItems.Add("Copy Azure Storage tables", 1);
+        if (queues != null && queues.Any())
+            submenuItems.Add("Copy Azure Storage queues", 2);
+        if (blobs != null && blobs.Any())
+            submenuItems.Add("Copy Azure Storage blobs", 3);
+
+        submenuItems.Add("Go back", 4);
+        return submenuItems;
+    }
 
 }

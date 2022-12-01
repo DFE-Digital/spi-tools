@@ -83,25 +83,11 @@ public class Navigation<T>
 
     }
 
-
-
     public void ClearWithLogo()
     {
         Clear();
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($@"
-  _____   __        _____       _ 
- |  __ \ / _|      / ____|     (_)
- | |  | | |_ ___  | (___  _ __  _ 
- | |  | |  _/ _ \  \___ \| '_ \| |
- | |__| | ||  __/_ ____) | |_) | |
- |_____/|_| \___(_)_____/| .__/|_|
-                         | |      
-                         |_|          ver{StringExtensions.GetAppVersion()}", Console.ForegroundColor);
-
-        Console.ResetColor();
+        Logo.Display();
         Console.WriteLine(Environment.NewLine);
     }
-
 
 }

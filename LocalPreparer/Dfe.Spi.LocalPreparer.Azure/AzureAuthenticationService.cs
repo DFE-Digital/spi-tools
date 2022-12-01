@@ -53,7 +53,8 @@ public class AzureAuthenticationService : IAzureAuthenticationService
                 ArmClient = client,
                 SubscriptionId = new Guid(subscription.Id.SubscriptionId),
                 SubscriptionResource = subscription,
-                StorageAccountKeys = new Dictionary<ServiceName, string>()
+                StorageAccountKeys = new Dictionary<ServiceName, string>(),
+                SubscriptionName = subscription.Data.DisplayName
             };
             _contextManager.SetContext(context);
             return context;

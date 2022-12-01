@@ -6,7 +6,7 @@ public class FileSystemService : IFileSystemService
 {
 
     private readonly ILogger<FileSystemService> _logger;
-    private readonly string serviceProjectName = "Dfe.Spi.{0}.Function";
+    private const string ServiceProjectName = "Dfe.Spi.{0}.Function";
 
     public FileSystemService(ILogger<FileSystemService> logger)
     {
@@ -17,7 +17,7 @@ public class FileSystemService : IFileSystemService
     {
         try
         {
-            var projectFolderName = string.Format(serviceProjectName, serviceName);
+            var projectFolderName = string.Format(ServiceProjectName, serviceName);
             var dirs = Directory.GetDirectories(solutionPath, $"*{projectFolderName}*", SearchOption.TopDirectoryOnly);
             if (dirs.Length <= 0)
                 return (null, null);
@@ -42,8 +42,8 @@ public class FileSystemService : IFileSystemService
         if (string.IsNullOrEmpty(filename) || string.IsNullOrEmpty(projectFolder))
             return false;
         var settingsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Configurations", "SettingFiles", filename.Replace(".csproj", ""));
-        var localSettings = System.IO.Directory.GetFiles(settingsDirectory, "local.settings.json").FirstOrDefault();
-        var launchSettings = System.IO.Directory.GetFiles(settingsDirectory, "launchSettings.json").FirstOrDefault();
+        var localSettings = Directory.GetFiles(settingsDirectory, "local.settings.json").FirstOrDefault();
+        var launchSettings = Directory.GetFiles(settingsDirectory, "launchSettings.json").FirstOrDefault();
 
         File.Copy(localSettings, Path.Combine(projectFolder, Path.GetFileName(localSettings)), true);
 
