@@ -169,6 +169,10 @@ public class AzureStorageService : IAzureStorageService
             {
                 await CreateBlobContainerAsync(serviceName, blobContainerName);
 
+                Interactions.WriteColourLine(
+                    $"{Environment.NewLine}Blob container \"{blobContainerName}\" created! {Environment.NewLine}",
+                    ConsoleColor.Green);
+
                 if (!(_configuration.Value.Services?.GetValueOrDefault(serviceName)?.CopyBlobContainerContents ??
                       true)) continue;
 
