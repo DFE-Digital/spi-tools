@@ -1,4 +1,4 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Enums;
+﻿using Dfe.Spi.LocalPreparer.Domain.Enums;
 using Microsoft.Extensions.Logging;
 
 namespace Dfe.Spi.LocalPreparer.Services;

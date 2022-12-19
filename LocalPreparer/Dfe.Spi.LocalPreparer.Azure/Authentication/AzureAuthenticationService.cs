@@ -1,30 +1,29 @@
 ﻿using Azure.Core;
-using Azure.Core.Diagnostics;
 using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
-using Dfe.Spi.LocalPreparer.Common.Configurations;
-using Dfe.Spi.LocalPreparer.Common.Enums;
-using Dfe.Spi.LocalPreparer.Common.Model;
+using Dfe.Spi.LocalPreparer.Common;
+using Dfe.Spi.LocalPreparer.Domain.Enums;
+using Dfe.Spi.LocalPreparer.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Dfe.Spi.LocalPreparer.Azure;
+namespace Dfe.Spi.LocalPreparer.Azure.Authentication;
 
 public class AzureAuthenticationService : IAzureAuthenticationService
 {
-    private readonly IAzureClientContextManager _contextManager;
+    private readonly IContextManager _contextManager;
     private readonly IOptions<SpiSettings> _configuration;
     private readonly ILogger<AzureAuthenticationService> _logger;
-    
-    public AzureAuthenticationService(IAzureClientContextManager contextManager, IOptions<SpiSettings> configuration, ILogger<AzureAuthenticationService> logger)
+
+    public AzureAuthenticationService(IContextManager contextManager, IOptions<SpiSettings> configuration, ILogger<AzureAuthenticationService> logger)
     {
         _contextManager = contextManager;
         _configuration = configuration;
         _logger = logger;
     }
 
-    public async Task<AzureClientContext?> AuthenticateAsync()
+    public async Task<Context?> AuthenticateAsync()
     {
         try
         {
@@ -48,12 +47,13 @@ public class AzureAuthenticationService : IAzureAuthenticationService
             var subscriptions = client.GetSubscriptions();
             SubscriptionResource subscription = await subscriptions.GetAsync(id.SubscriptionId);
 
-            var context = new AzureClientContext()
+            var context = new Context()
             {
                 ArmClient = client,
                 SubscriptionId = new Guid(subscription.Id.SubscriptionId),
                 SubscriptionResource = subscription,
                 StorageAccountKeys = new Dictionary<ServiceName, string>(),
+                CosmosDbAccountKeys = new Dictionary<ServiceName, string>(),
                 SubscriptionName = subscription.Data.DisplayName
             };
             _contextManager.SetContext(context);
@@ -61,9 +61,10 @@ public class AzureAuthenticationService : IAzureAuthenticationService
         }
         catch (Exception e)
         {
-           _logger.LogError($"Azure authentication failed! {Environment.NewLine} {e}");
-           Console.ReadLine();
-           return null;
+            _logger.LogError($"Azure authentication failed! {Environment.NewLine} {e}");
+            Console.ReadLine();
+            return null;
         }
     }
+
 }

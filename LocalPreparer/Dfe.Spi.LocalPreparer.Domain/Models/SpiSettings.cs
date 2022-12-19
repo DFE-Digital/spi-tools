@@ -1,5 +1,6 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Enums;
-namespace Dfe.Spi.LocalPreparer.Common.Configurations;
+﻿using Dfe.Spi.LocalPreparer.Domain.Enums;
+
+namespace Dfe.Spi.LocalPreparer.Domain.Models;
 
 public class SpiSettings
 {
@@ -20,6 +21,18 @@ public class ServiceSettings
     public Uri? LocalStorageBlobEndpoint { get; set; }
     public Uri? LocalStorageTableEndpoint { get; set; }
     public Uri? LocalStorageQueueEndpoint { get; set; }
+    public Uri? LocalCosmosEndpoint { get; set; }   
+    public string? RemoteCosmosAccountName { get; set; }
+    public Uri? RemoteCosmosEndpoint { get; set; }
+    public string? LocalCosmosKey { get; set; } 
+    public string? RemoteCosmosKey { get; set; }
+    public string? CosmosRemoteDatabaseName { get; set; }
+    public string? CosmosLocalDatabaseName { get; set; }
+    public string? CosmosRemoteContainerName { get; set; }
+    public string? CosmosLocalContainerName { get; set; }
+    public string? CosmosPartitionKey { get; set; }
+
+
 }
 
 public class AzureSettings

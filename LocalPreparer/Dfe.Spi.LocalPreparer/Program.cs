@@ -1,8 +1,9 @@
-﻿using Dfe.Spi.LocalPreparer.Azure;
-using Dfe.Spi.LocalPreparer.Common.Configurations;
-using Dfe.Spi.LocalPreparer.Common.Enums;
+﻿using Dfe.Spi.LocalPreparer.Azure.Authentication;
+using Dfe.Spi.LocalPreparer.Common;
 using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Common.Utils;
+using Dfe.Spi.LocalPreparer.Domain.Enums;
+using Dfe.Spi.LocalPreparer.Domain.Models;
 using Dfe.Spi.LocalPreparer.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +62,8 @@ internal class Program
 
     private static ServiceName SelectService()
     {
+        var contextManager = IoC.Services.GetService<IContextManager>();
+
         var services = Enum.GetValues(typeof(ServiceName)).Cast<ServiceName>()
            .ToDictionary(t => t.ToString(), t => (int)t);
 
@@ -68,6 +71,7 @@ internal class Program
         var selectedOption = menu.Run(true);
         var selectedServiceName = services.FirstOrDefault(x => x.Value == selectedOption);
         Enum.TryParse(selectedServiceName.Key, out ServiceName serviceName);
+        contextManager.SetActiveService(serviceName);
         return serviceName;
     }
 
@@ -93,6 +97,9 @@ internal class Program
                 await ExecuteCopyBlobs(serviceName);
                 break;
             case 4:
+                await ExecuteCopyCosmosDbDataAsync(serviceName);
+                break;
+            case 5:
                 await ServiceListAsync();
                 break;
         }
@@ -132,6 +139,13 @@ internal class Program
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
     }
 
+    private static async Task ExecuteCopyCosmosDbDataAsync(ServiceName serviceName)
+    {
+        var azureCosmosService = IoC.Services.GetService<IAzureCosmosService>();
+        await azureCosmosService.CopyCosmosDbData(serviceName);
+        await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+    }
+
     private static async Task ExecuteCopyBlobs(ServiceName serviceName)
     {
         var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
@@ -155,7 +169,7 @@ internal class Program
         Console.WriteLine($"{Environment.NewLine + Environment.NewLine}Authenticating with Azure....");
         Console.WriteLine($"{Environment.NewLine}Please check your browser to authenticate using your Azure credentials!");
         Console.ResetColor();
-        Thread.Sleep(2000);
+        Thread.Sleep(1000);
         var azureAuthenticationService = IoC.Services.GetService<IAzureAuthenticationService>();
         var context = await azureAuthenticationService.AuthenticateAsync();
         if (context == null) return false;
@@ -175,6 +189,8 @@ internal class Program
         var tables = _configurations.Value.Services?.GetValueOrDefault(serviceName).Tables;
         var queues = _configurations.Value.Services?.GetValueOrDefault(serviceName).Queues;
         var blobs = _configurations.Value.Services?.GetValueOrDefault(serviceName).BlobContainers;
+        var cosmosDb = _configurations.Value.Services?.GetValueOrDefault(serviceName).RemoteCosmosAccountName;
+
 
         submenuItems.Add("Copy setting files", 0);
 
@@ -184,8 +200,10 @@ internal class Program
             submenuItems.Add("Copy Azure Storage queues", 2);
         if (blobs != null && blobs.Any())
             submenuItems.Add("Copy Azure Storage blobs", 3);
+        if (!string.IsNullOrEmpty(cosmosDb))
+            submenuItems.Add("Copy CosmosDb data", 4);
 
-        submenuItems.Add("Go back", 4);
+        submenuItems.Add("Go back", 5);
         return submenuItems;
     }
 

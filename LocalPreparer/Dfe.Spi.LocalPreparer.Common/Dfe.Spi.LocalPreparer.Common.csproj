@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.ResourceManager" Version="1.3.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dfe.Spi.LocalPreparer.Domain\Dfe.Spi.LocalPreparer.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

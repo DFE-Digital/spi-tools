@@ -2,25 +2,26 @@
 using Azure.ResourceManager.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
-using Dfe.Spi.LocalPreparer.Azure;
-using Dfe.Spi.LocalPreparer.Common.Configurations;
-using Dfe.Spi.LocalPreparer.Common.Enums;
+using Dfe.Spi.LocalPreparer.Common;
 using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Common.Utils;
+using Dfe.Spi.LocalPreparer.Domain.Enums;
+using Dfe.Spi.LocalPreparer.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Dfe.Spi.LocalPreparer.Services;
+
 public class AzureStorageService : IAzureStorageService
 {
     private readonly IOptions<SpiSettings> _configuration;
     private readonly ILogger<AzureStorageService> _logger;
-    private readonly IAzureClientContextManager _azureClientContextManager;
-    public AzureStorageService(IOptions<SpiSettings> configuration, ILogger<AzureStorageService> logger, IAzureClientContextManager azureClientContextManager)
+    private readonly IContextManager _contextManager;
+    public AzureStorageService(IOptions<SpiSettings> configuration, ILogger<AzureStorageService> logger, IContextManager contextManager)
     {
         _configuration = configuration;
         _logger = logger;
-        _azureClientContextManager = azureClientContextManager;
+        _contextManager = contextManager;
     }
 
     public async Task CopyTableToBlobAsync(ServiceName serviceName)
@@ -138,7 +139,7 @@ public class AzureStorageService : IAzureStorageService
             Interactions.RaiseError(new List<string>() { "Failed to create a blob container, please check your connection string!" }, null);
         }
     }
-
+    
     private async Task CreateQueueAsync(ServiceName serviceName, string queueName)
     {
         try
@@ -253,7 +254,7 @@ public class AzureStorageService : IAzureStorageService
             else
             {
 
-                if (_azureClientContextManager.AzureClientContext.StorageAccountKeys.TryGetValue(serviceName,
+                if (_contextManager.Context.StorageAccountKeys.TryGetValue(serviceName,
                         out string cachedKey)) return cachedKey;
 
                 Interactions.WriteColourLine(
@@ -263,7 +264,7 @@ public class AzureStorageService : IAzureStorageService
                 var accountName = _configuration.Value.Services?.GetValueOrDefault(serviceName)
                     ?.RemoteStorageAccountName;
                 var resourceGroupName = accountName?.ToResourceGroup(_configuration.Value.Azure.AzureEnvironmentPrefix);
-                var subscription = _azureClientContextManager.AzureClientContext.SubscriptionResource;
+                var subscription = _contextManager.Context.SubscriptionResource;
                 var resourceGroups = subscription.GetResourceGroups();
                 ResourceGroupResource resourceGroup = await resourceGroups.GetAsync(resourceGroupName);
                 var storageAccount = await resourceGroup.GetStorageAccounts().GetAsync(accountName);
@@ -271,7 +272,7 @@ public class AzureStorageService : IAzureStorageService
                 if (key1 == null)
                     throw new Exception();
 
-                _azureClientContextManager.AzureClientContext.StorageAccountKeys.Add(serviceName, key1.Value);
+                _contextManager.Context.StorageAccountKeys.Add(serviceName, key1.Value);
                 return key1.Value;
             }
         }

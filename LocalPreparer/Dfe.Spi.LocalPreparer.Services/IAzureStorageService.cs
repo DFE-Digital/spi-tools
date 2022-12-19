@@ -1,4 +1,4 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Enums;
+﻿using Dfe.Spi.LocalPreparer.Domain.Enums;
 
 namespace Dfe.Spi.LocalPreparer.Services;
 public interface IAzureStorageService

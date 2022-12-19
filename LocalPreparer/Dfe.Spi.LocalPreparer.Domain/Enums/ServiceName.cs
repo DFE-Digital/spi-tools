@@ -1,4 +1,4 @@
-﻿namespace Dfe.Spi.LocalPreparer.Common.Enums;
+﻿namespace Dfe.Spi.LocalPreparer.Domain.Enums;
 
 
 public enum ServiceName
