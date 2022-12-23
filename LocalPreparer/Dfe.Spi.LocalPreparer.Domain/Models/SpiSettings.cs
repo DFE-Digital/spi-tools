@@ -31,7 +31,8 @@ public class ServiceSettings
     public string? CosmosRemoteContainerName { get; set; }
     public string? CosmosLocalContainerName { get; set; }
     public string? CosmosPartitionKey { get; set; }
-
+    public int? CosmosMaxRetryAttempts { get; set; }
+    public int? CosmosRateLimitingDelay { get; set; }
 
 }
 

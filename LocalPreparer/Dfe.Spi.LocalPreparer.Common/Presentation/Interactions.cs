@@ -108,7 +108,7 @@ public static class Interactions
 
     public static void RaiseError(List<string> invalidItems, Action? escAction)
     {
-        Console.WriteLine($"{Environment.NewLine}There is a problem with executing selected operation, please review and fix the following:{Environment.NewLine}");
+        Console.WriteLine($"{Environment.NewLine}Executing the operation failed, please review the following (view log.txt for detailed exception):{Environment.NewLine}");
         foreach (var item in invalidItems)
         {
             Console.ForegroundColor = ConsoleColor.Red;

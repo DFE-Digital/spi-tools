@@ -1,4 +1,4 @@
-﻿using System.Net.Mime;
+﻿using System.Configuration;
 using Dfe.Spi.LocalPreparer.Common;
 using Dfe.Spi.LocalPreparer.Domain.Enums;
 using Dfe.Spi.LocalPreparer.Domain.Models;
@@ -33,29 +33,29 @@ public class CosmosContainerProvider : ICosmosContainerProvider
         try
         {
             Container container;
-            var partitionKey = _configuration.Value.Services.GetValueOrDefault(_currentService)?
+            var partitionKey = _configuration.Value.Services?.GetValueOrDefault(_currentService)?
                 .CosmosPartitionKey;
 
             switch (connectionType)
             {
                 case CosmosConnectionType.Local:
 
-                    var localDbName = _configuration.Value.Services.GetValueOrDefault(_currentService)?
+                    var localDbName = _configuration.Value.Services?.GetValueOrDefault(_currentService)?
                         .CosmosLocalDatabaseName;
-                    var localContainerName = _configuration.Value.Services.GetValueOrDefault(_currentService)?
+                    var localContainerName = _configuration.Value.Services?.GetValueOrDefault(_currentService)?
                         .CosmosLocalContainerName;
                     var databaseResponse = await _cosmosLocalClientProvider.UseClientAsync(async client =>
                         (await client).CreateDatabaseIfNotExistsAsync(localDbName));
                     var localDb = (await databaseResponse).Database;
                     container = await localDb
-                        .CreateContainerIfNotExistsAsync(localContainerName, partitionKey, 10000);
+                        .CreateContainerIfNotExistsAsync(localContainerName, partitionKey, 20000);
                     await container.ReadContainerAsync();
                     break;
                 case CosmosConnectionType.Remote:
 
-                    var remoteDbName = _configuration.Value.Services.GetValueOrDefault(_currentService)?
+                    var remoteDbName = _configuration.Value.Services?.GetValueOrDefault(_currentService)?
                         .CosmosRemoteDatabaseName;
-                    var remoteContainerName = _configuration.Value.Services.GetValueOrDefault(_currentService)?
+                    var remoteContainerName = _configuration.Value.Services?.GetValueOrDefault(_currentService)?
                         .CosmosRemoteContainerName;
                     var remoteDb = await _cosmosRemoteClientProvider.UseClientAsync(async client =>
                         (await client).GetDatabase(remoteDbName));
@@ -72,30 +72,30 @@ public class CosmosContainerProvider : ICosmosContainerProvider
         }
         catch (CosmosException ex)
         {
+            _logger.LogError(ex, nameof(GetContainerAsync));
             if (ex.Message.Contains("firewall"))
             {
-                _logger.LogError("Please make sure your IP address is whitelisted in Azure CosmosDb firewall!");
+                throw new SpiException(new List<string>()
+                    { "Please make sure your IP address is whitelisted in Azure CosmosDb firewall!" }, ex);
             }
+            throw new SpiException(new List<string>() { "Failed to get container!" }, ex);
         }
         catch (Exception ex)
         {
             _logger.LogError("Failed to get container!");
+            throw new SpiException(new List<string>(){"Failed to get container!"}, ex);
         }
-
-        Console.ReadLine();
-        Environment.Exit(0);
-        return null;
     }
 
     public async Task<Task> PrepareLocalDatabase()
     {
-        _logger.LogInformation($"Creating database \"{_configuration.Value.Services.GetValueOrDefault(_currentService)?.CosmosLocalDatabaseName}\" if it doesn't exist!");
-        _logger.LogInformation($"Recreating local CosmosDb container: {_configuration.Value.Services.GetValueOrDefault(_currentService)?.CosmosLocalContainerName}");
+        _logger.LogInformation($"Creating database \"{_configuration.Value.Services?.GetValueOrDefault(_currentService)?.CosmosLocalDatabaseName}\" if it doesn't exist!");
+        _logger.LogInformation($"Recreating local CosmosDb container: {_configuration.Value.Services?.GetValueOrDefault(_currentService)?.CosmosLocalContainerName}");
         // making sure the container is deleted and recreated
         var container = await GetContainerAsync(CosmosConnectionType.Local);
         await container.DeleteContainerAsync();
         await GetContainerAsync(CosmosConnectionType.Local);
-        _logger.LogInformation($"Container \"{_configuration.Value.Services.GetValueOrDefault(_currentService)?.CosmosLocalContainerName}\" created successfully!");
+        _logger.LogInformation($"Container \"{_configuration.Value.Services?.GetValueOrDefault(_currentService)?.CosmosLocalContainerName}\" created successfully!");
         return Task.CompletedTask;
     }
 

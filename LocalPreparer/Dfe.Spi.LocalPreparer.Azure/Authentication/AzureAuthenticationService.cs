@@ -3,6 +3,7 @@ using Azure.Identity;
 using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 using Dfe.Spi.LocalPreparer.Common;
+using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Domain.Enums;
 using Dfe.Spi.LocalPreparer.Domain.Models;
 using Microsoft.Extensions.Logging;
@@ -61,6 +62,7 @@ public class AzureAuthenticationService : IAzureAuthenticationService
         }
         catch (Exception e)
         {
+            Interactions.RaiseError(new(){ "Azure authentication failed!" }, null);
             _logger.LogError($"Azure authentication failed! {Environment.NewLine} {e}");
             Console.ReadLine();
             return null;

@@ -73,8 +73,7 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        _logger.LogError(e.Data);
-                        failed = true;
+                        throw new Exception(e.Data);
                     }
                 };
 

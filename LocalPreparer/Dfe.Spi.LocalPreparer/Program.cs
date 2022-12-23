@@ -4,12 +4,15 @@ using Dfe.Spi.LocalPreparer.Common.Presentation;
 using Dfe.Spi.LocalPreparer.Common.Utils;
 using Dfe.Spi.LocalPreparer.Domain.Enums;
 using Dfe.Spi.LocalPreparer.Domain.Models;
-using Dfe.Spi.LocalPreparer.Services;
+using Dfe.Spi.LocalPreparer.Services.Mediator.Cosmos.Command;
+using Dfe.Spi.LocalPreparer.Services.Mediator.FileSystem.Command;
+using Dfe.Spi.LocalPreparer.Services.Mediator.Storage.Command;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
+using Serilog.Events;
 
 namespace Dfe.Spi.LocalPreparer;
 
@@ -17,6 +20,8 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
+
         var configuration = Configure();
         IoC.ConfigureServices(configuration);
         ConfigureLogger();
@@ -25,15 +30,18 @@ internal class Program
 
     private static void ConfigureLogger()
     {
-        var logFilePath = Path.Combine(AppContext.BaseDirectory, "log.txt");
+        var logFilePath = Path.Combine(AppContext.BaseDirectory, "logs.txt");
+
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.Console()
             .WriteTo.File(logFilePath)
+            .WriteTo.Logger(lc =>
+                lc.Filter.ByIncludingOnly(x =>
+                    x.Level != LogEventLevel.Error).WriteTo.Console())
             .CreateLogger();
-
         var loggerFactory = IoC.Services.GetRequiredService<ILoggerFactory>();
         loggerFactory.AddSerilog();
+
     }
 
     public static IConfiguration Configure()
@@ -107,49 +115,40 @@ internal class Program
 
     private static async Task ExecuteCopySettingFilesAsync(ServiceName serviceName)
     {
-        var fileSystemService = IoC.Services.GetService<IFileSystemService>();
-
-        var solutionPath = Interactions.Input<string>("Please enter full path to the solution folder. Note: This operation will overwrite your project's local.settings.json and launchSettings.json", null, false, false, ConsoleColor.Blue, null);
-
-        var (projectName, projectPath) = fileSystemService.ValidateServiceName(serviceName, solutionPath);
-
-        if (string.IsNullOrEmpty(projectName))
-        {
-            Interactions.RaiseError(new List<string>() { "Functions project file not found, please make sure you have selected correct service and provided a path to the solution folder!" }, () => ServiceListAsync());
-        }
-        fileSystemService.CopySettingFiles(projectName, projectPath);
-
+        var solutionPath = Interactions.Input<string>(
+            "Please enter full path to the solution folder. Note: This operation will overwrite your project's local.settings.json and launchSettings.json",
+            null,
+            false,
+            false,
+            ConsoleColor.Blue,
+            null);
+        await IoC.Mediator.Send(new CopySettingFilesCommand(solutionPath));
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+
     }
 
 
     private static async Task ExecuteCopyTable(ServiceName serviceName)
     {
-        var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
-        await azureStorageService.CopyTableToBlobAsync(serviceName);
-        await azureStorageService.CopyBlobToTableAsync(serviceName);
+        await IoC.Mediator.Send(new CopyTablesCommand());
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
-
     }
 
     private static async Task ExecuteCreateQueues(ServiceName serviceName)
     {
-        var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
-        await azureStorageService.CreateQueuesAsync(serviceName);
+        await IoC.Mediator.Send(new CreateQueuesCommand());
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
     }
 
     private static async Task ExecuteCopyCosmosDbDataAsync(ServiceName serviceName)
     {
-        var azureCosmosService = IoC.Services.GetService<IAzureCosmosService>();
-        await azureCosmosService.CopyCosmosDbData(serviceName);
+        await IoC.Mediator.Send(new CopyCosmosDataCommand(serviceName));
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
     }
 
     private static async Task ExecuteCopyBlobs(ServiceName serviceName)
     {
-        var azureStorageService = IoC.Services.GetService<IAzureStorageService>();
-        await azureStorageService.CopyBlobAsync(serviceName);
+        await IoC.Mediator.Send(new CopyBlobsCommand());
         await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
     }
 
@@ -186,11 +185,10 @@ internal class Program
         var submenuItems = new Dictionary<string, int>();
         var _configurations = IoC.Services.GetService<IOptions<SpiSettings>>();
 
-        var tables = _configurations.Value.Services?.GetValueOrDefault(serviceName).Tables;
-        var queues = _configurations.Value.Services?.GetValueOrDefault(serviceName).Queues;
-        var blobs = _configurations.Value.Services?.GetValueOrDefault(serviceName).BlobContainers;
-        var cosmosDb = _configurations.Value.Services?.GetValueOrDefault(serviceName).RemoteCosmosAccountName;
-
+        var tables = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.Tables;
+        var queues = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.Queues;
+        var blobs = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.BlobContainers;
+        var cosmosDb = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.RemoteCosmosAccountName;
 
         submenuItems.Add("Copy setting files", 0);
 
@@ -205,6 +203,27 @@ internal class Program
 
         submenuItems.Add("Go back", 5);
         return submenuItems;
+    }
+
+    static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+    {
+        var logger = IoC.Services.GetRequiredService<ILogger<Program>>();
+        var ex = (Exception)e.ExceptionObject;
+        foreach (var message in ex.GetMessages())
+        {
+            logger.LogError(message);
+        }
+        if (e.ExceptionObject is SpiException exception)
+        {
+            Interactions.RaiseError(exception.Errors, async () => await ServiceListAsync());
+        }
+        else
+        {
+            Interactions.WriteColourLine(
+                $"{Environment.NewLine}Operation failed, please view the log.txt file for detailed exceptions!{Environment.NewLine}",
+                ConsoleColor.Red);
+        }
+
     }
 
 }

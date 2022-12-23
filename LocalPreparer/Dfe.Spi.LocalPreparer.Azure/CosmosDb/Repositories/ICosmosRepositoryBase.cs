@@ -1,6 +1,5 @@
 ﻿using Dfe.Spi.LocalPreparer.Domain.Models.CosmosDb;
 using Microsoft.Azure.Cosmos;
-using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
 namespace Dfe.Spi.LocalPreparer.Azure.CosmosDb.Repositories;
@@ -13,7 +12,7 @@ public interface ICosmosRepositoryBase<TItem> where TItem : IItem
         PartitionKey partitionKey,
         CancellationToken cancellationToken = default);
 
-    ValueTask<IEnumerable<TItem>> GetAsync(
+    ValueTask<ReadOnlyMemory<TItem>> GetAsync(
         Expression<Func<TItem, bool>> predicate,
         CancellationToken cancellationToken = default);
 
@@ -26,7 +25,7 @@ public interface ICosmosRepositoryBase<TItem> where TItem : IItem
         CancellationToken cancellationToken = default);
 
     Task<BulkOperationResponse<TItem>> BulkCreateAsync(
-        IEnumerable<TItem> values,
+        ReadOnlyMemory<TItem> values,
         CancellationToken cancellationToken = default);
 
     Task<ItemResponse<TItem>> UpsertAsync(
@@ -34,6 +33,6 @@ public interface ICosmosRepositoryBase<TItem> where TItem : IItem
         CancellationToken cancellationToken = default);
 
     Task<BulkOperationResponse<TItem>> BulkUpsertAsync(
-        IEnumerable<TItem> values,
+        ReadOnlyMemory<TItem> values,
         CancellationToken cancellationToken = default);
 }
