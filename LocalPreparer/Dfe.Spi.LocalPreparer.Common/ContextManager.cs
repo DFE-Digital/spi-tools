@@ -1,9 +1,8 @@
 ﻿
-using Dfe.Spi.LocalPreparer.Common;
 using Dfe.Spi.LocalPreparer.Domain.Enums;
 using Dfe.Spi.LocalPreparer.Domain.Models;
 
-namespace Dfe.Spi.LocalPreparer.Azure;
+namespace Dfe.Spi.LocalPreparer.Common;
 
 public class ContextManager : IContextManager
 {

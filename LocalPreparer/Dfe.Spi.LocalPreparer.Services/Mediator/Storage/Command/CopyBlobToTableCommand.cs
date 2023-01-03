@@ -30,7 +30,6 @@ public class CopyBlobToTableCommand : IRequest<bool>
         public async Task<bool> Handle(CopyBlobToTableCommand request,
             CancellationToken cancellationToken)
         {
-            var results = new OperationResult<bool>();
             var serviceName = _contextManager.Context.ActiveService;
 
             try

@@ -1,4 +1,6 @@
-﻿namespace Dfe.Spi.LocalPreparer.Common.Utils;
+﻿using Dfe.Spi.LocalPreparer.Common.Utils;
+
+namespace Dfe.Spi.LocalPreparer.Common.Presentation;
 
 public static class Logo
 {

@@ -1,5 +1,4 @@
-﻿using Dfe.Spi.LocalPreparer.Common.Utils;
-using static System.Console;
+﻿using static System.Console;
 
 namespace Dfe.Spi.LocalPreparer.Common.Presentation;
 

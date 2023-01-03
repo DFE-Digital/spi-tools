@@ -143,7 +143,8 @@ internal class Program
     private static async Task ExecuteCopyCosmosDbDataAsync(ServiceName serviceName)
     {
         await IoC.Mediator.Send(new CopyCosmosDataCommand(serviceName));
-        await GoBack("Press any key to continue...!", async () => await ServiceSubmenuAsync(serviceName));
+        // Force the user to exit the application to release the used memory
+        Interactions.Exit("Press any key to exit the application... (restart the application if you need to run any other operation)!");
     }
 
     private static async Task ExecuteCopyBlobs(ServiceName serviceName)
