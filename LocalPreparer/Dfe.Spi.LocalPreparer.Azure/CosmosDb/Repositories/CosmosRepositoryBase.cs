@@ -115,7 +115,7 @@ public abstract class CosmosRepositoryBase<TItem> : ICosmosRepositoryBase<TItem>
         var timer = new Stopwatch();
         timer.Start();
 
-        var query = container.GetItemLinqQueryable<TItem>().Where(predicate);
+        var query = container.GetItemLinqQueryable<TItem>().Where(predicate).Take(5000);
         using var iterator = query.ToFeedIterator();
         var results = new List<TItem>(count);
 
