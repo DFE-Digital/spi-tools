@@ -104,7 +104,6 @@ public class CopyCosmosDataCommand : IRequest<bool>
                 return await Retry(errors, serviceName, chosenOption);
             _logger.LogInformation($"**** Operation completed! ****");
 
-
             _totalTime.Stop();
             _logger.LogInformation($"**** Total time taken: {_totalTime.Elapsed} ****");
 

@@ -49,7 +49,7 @@ public abstract class CosmosRepositoryBase<TItem> : ICosmosRepositoryBase<TItem>
         var response = await container.CreateItemAsync(value, new PartitionKey(value.PartitionableId),
             cancellationToken: cancellationToken);
         if (!Debugger.IsAttached)
-            Thread.Sleep(_configuration.Value.Services?.GetValueOrDefault(_contextManager.Context.ActiveService)?.CosmosRateLimitingDelay ?? 1);
+            _ = Task.Delay(_configuration.Value.Services?.GetValueOrDefault(_contextManager.Context.ActiveService)?.CosmosRateLimitingDelay ?? 1, cancellationToken);
         return response;
     }
 
@@ -61,7 +61,8 @@ public abstract class CosmosRepositoryBase<TItem> : ICosmosRepositoryBase<TItem>
 
         var response = await container.UpsertItemAsync(value, new PartitionKey(value.PartitionableId),
             cancellationToken: cancellationToken);
-        await Task.Delay(_configuration.Value.Services?.GetValueOrDefault(_contextManager.Context.ActiveService)?.CosmosRateLimitingDelay ?? 1, cancellationToken);
+        if (!Debugger.IsAttached)
+            _ = Task.Delay(_configuration.Value.Services?.GetValueOrDefault(_contextManager.Context.ActiveService)?.CosmosRateLimitingDelay ?? 1, cancellationToken);
         return response;
     }
 
