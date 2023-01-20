@@ -55,9 +55,7 @@ internal class Program
     private static async Task InitAsync()
     {
         Logo.Display();
-        Console.ForegroundColor = ConsoleColor.DarkYellow;
-        Console.WriteLine("Dfe.Spi Local Preparer Tool!" + Environment.NewLine, Console.ForegroundColor);
-        Console.ResetColor();
+        Interactions.WriteColourLine("Dfe.Spi Local Preparer Tool!" + Environment.NewLine, ConsoleColor.DarkYellow);
         await AuthenticateAsync();
     }
 
@@ -163,22 +161,21 @@ internal class Program
         await enterAction.Invoke();
     }
 
-    private static async Task<bool> AuthenticateAsync()
+    private static async Task AuthenticateAsync()
     {
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.WriteLine($"{Environment.NewLine + Environment.NewLine}Authenticating with Azure....");
-        Console.WriteLine($"{Environment.NewLine}Please check your browser to authenticate using your Azure credentials!");
-        Console.ResetColor();
+        Interactions.WriteColourLine($"{Environment.NewLine + Environment.NewLine}Authenticating with Azure....",
+            ConsoleColor.Blue);
+        Interactions.WriteColourLine($"{Environment.NewLine}Please check your browser to authenticate using your Azure credentials!",
+            ConsoleColor.Blue);
         Thread.Sleep(1000);
         var azureAuthenticationService = IoC.Services.GetService<IAzureAuthenticationService>();
         var context = await azureAuthenticationService.AuthenticateAsync();
-        if (context == null) return false;
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"Authentication successful!");
-        Console.WriteLine($"Active subscription: {context.SubscriptionName} ({context.SubscriptionId})");
+        if (context == null) return;
+
+        Interactions.WriteColourLine($"Authentication successful!", ConsoleColor.Green);
+        Interactions.WriteColourLine($"Active subscription: {context.SubscriptionName} ({context.SubscriptionId})", ConsoleColor.Green);
         Console.ResetColor();
         await GoBack("Press any key to continue...", async () => await ServiceListAsync());
-        return true;
     }
 
     private static Dictionary<string, int> CreateServiceSubmenu(ServiceName serviceName)
@@ -187,17 +184,19 @@ internal class Program
         var _configurations = IoC.Services.GetService<IOptions<SpiSettings>>();
 
         var tables = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.Tables;
+        var tablesWc = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.TablesWithoutContent;
         var queues = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.Queues;
         var blobs = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.BlobContainers;
+        var blobsWc = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.BlobContainersWithoutContent;
         var cosmosDb = _configurations.Value.Services?.GetValueOrDefault(serviceName)?.RemoteCosmosAccountName;
 
         submenuItems.Add("Copy setting files", 0);
 
-        if (tables != null && tables.Any())
+        if (tables != null && tables.Any() || tablesWc != null && tablesWc.Any())
             submenuItems.Add("Copy Azure Storage tables", 1);
         if (queues != null && queues.Any())
             submenuItems.Add("Copy Azure Storage queues", 2);
-        if (blobs != null && blobs.Any())
+        if (blobs != null && blobs.Any() || blobsWc != null && blobsWc.Any())
             submenuItems.Add("Copy Azure Storage blobs", 3);
         if (!string.IsNullOrEmpty(cosmosDb))
             submenuItems.Add("Copy CosmosDb data", 4);

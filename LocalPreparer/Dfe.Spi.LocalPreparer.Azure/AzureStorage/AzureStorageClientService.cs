@@ -1,4 +1,5 @@
-﻿using Azure.ResourceManager.Resources;
+﻿using Azure.Data.Tables;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Queues;
@@ -30,6 +31,9 @@ namespace Dfe.Spi.LocalPreparer.Azure.AzureStorage
 
         public async Task<QueueClient> GetQueueClient(string queueName, bool remote = false) =>
             new QueueClient(await CreateConnectionStringAsync(remote), queueName);
+
+        public async Task<TableClient> GetTableClient(string tableName, bool remote = false) =>
+            new TableClient(await CreateConnectionStringAsync(remote), tableName);
 
 
         private async Task<string> CreateConnectionStringAsync(bool remote = false)

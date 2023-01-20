@@ -52,7 +52,7 @@ public class CopyTableToBlobCommand : IRequest<bool>
                 {
                     Interactions.WriteColourLine($"{Environment.NewLine}Downloading \"{tableName}\" as a blob into {tempContainerName} container...{Environment.NewLine}", ConsoleColor.Blue);
                     var arguments =
-                        $@"/source:https://{_configuration.Value.Services?.GetValueOrDefault(serviceName)?.RemoteStorageAccountName}.table.core.windows.net/{tableName} /sourceKey:{await _azureStorageClientService.GetAzureStorageKeyAsync()} /dest:{_configuration.Value.Services?.GetValueOrDefault(serviceName).LocalStorageBlobEndpoint}/{tempContainerName} /Destkey:{_configuration.Value.Services?.GetValueOrDefault(serviceName).LocalStorageAccessKey} /destType:blob /manifest:{uniqueTargetFileName}{tableName} /SplitSize:128";
+                        $@"/source:https://{_configuration.Value.Services?.GetValueOrDefault(serviceName)?.RemoteStorageAccountName}.table.core.windows.net/{tableName} /sourceKey:{await _azureStorageClientService.GetAzureStorageKeyAsync()} /dest:{_configuration.Value.Services?.GetValueOrDefault(serviceName).LocalStorageBlobEndpoint}/{tempContainerName} /Destkey:{_configuration.Value.Services?.GetValueOrDefault(serviceName).LocalStorageAccessKey} /destType:blob /manifest:{uniqueTargetFileName}{tableName} /SplitSize:64";
 
                     var succeeded = await AzCopyLauncher.RunAsync(arguments, _logger);
                     if (!succeeded)

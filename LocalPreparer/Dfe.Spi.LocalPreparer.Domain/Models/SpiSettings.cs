@@ -13,9 +13,10 @@ public class ServiceSettings
     public string? RemoteStorageAccountName { get; set; }
     public string? LocalStorageAccountName { get; set; }
     public string[]? Tables { get; set; }
+    public string[]? TablesWithoutContent { get; set; }
     public string[]? Queues { get; set; }
     public string[]? BlobContainers { get; set; }
-    public bool? CopyBlobContainerContents { get; set; }
+    public string[]? BlobContainersWithoutContent { get; set; }
     public string? RemoteStorageAccessKey { get; set; }
     public string? LocalStorageAccessKey { get; set; }
     public Uri? LocalStorageBlobEndpoint { get; set; }

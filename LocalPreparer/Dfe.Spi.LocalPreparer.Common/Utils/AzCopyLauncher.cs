@@ -64,7 +64,7 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
                         var line = input.ToString();
                         input = new StringBuilder();
                         _logger.LogInformation(line);
-                        proc.StandardInput.Write("Yes");
+                        proc.StandardInput.Write("Y");
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace Dfe.Spi.LocalPreparer.Common.Utils
 
         private static string? PrepareAzCopyLog(string value)
         {
-            return string.IsNullOrEmpty(value) ? null : value[(value.IndexOf("]", StringComparison.Ordinal) + 1)..];
+            return string.IsNullOrEmpty(value) ? null : value[..];
         }
     }
 }

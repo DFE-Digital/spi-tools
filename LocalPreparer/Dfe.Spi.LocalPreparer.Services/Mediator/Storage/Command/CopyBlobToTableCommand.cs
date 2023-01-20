@@ -18,13 +18,16 @@ public class CopyBlobToTableCommand : IRequest<bool>
         private readonly IContextManager _contextManager;
         private readonly IAzureStorageClientService _azureStorageClientService;
         private readonly ILogger<Handler> _logger;
+        private readonly IMediator _mediator;
 
-        public Handler(IOptions<SpiSettings> configuration, IContextManager contextManager, IAzureStorageClientService azureStorageClientService, ILogger<Handler> logger)
+
+        public Handler(IOptions<SpiSettings> configuration, IContextManager contextManager, IAzureStorageClientService azureStorageClientService, ILogger<Handler> logger, IMediator mediator)
         {
             _configuration = configuration;
             _contextManager = contextManager;
             _azureStorageClientService = azureStorageClientService;
             _logger = logger;
+            _mediator = mediator;
         }
 
         public async Task<bool> Handle(CopyBlobToTableCommand request,
@@ -50,6 +53,7 @@ public class CopyBlobToTableCommand : IRequest<bool>
 
                 foreach (var tableName in _configuration.Value.Services?.GetValueOrDefault(serviceName)?.Tables ?? new string[] { })
                 {
+
                     Interactions.WriteColourLine($"{Environment.NewLine}Copying \"{tableName}\" blob into a table...{Environment.NewLine}", ConsoleColor.Blue);
                     var arguments =
                         $@"/source:{_configuration.Value.Services?.GetValueOrDefault(serviceName)?.LocalStorageBlobEndpoint}/{tempContainerName} /sourceKey:{_configuration.Value.Services.GetValueOrDefault(serviceName).LocalStorageAccessKey} /dest:{_configuration.Value.Services.GetValueOrDefault(serviceName).LocalStorageTableEndpoint}/{tableName} /Destkey:{_configuration.Value.Services.GetValueOrDefault(serviceName).LocalStorageAccessKey} /manifest:{uniqueTargetFileName}{tableName}.manifest /sourceType:blob /destType:table /EntityOperation:InsertOrReplace";
@@ -58,8 +62,17 @@ public class CopyBlobToTableCommand : IRequest<bool>
                     if (!succeeded)
                         break;
                     Interactions.WriteColourLine($"{Environment.NewLine}Copying \"{tableName}\" into a table succeeded! {Environment.NewLine}", ConsoleColor.Green);
-
                 }
+
+                foreach (var tableName in _configuration.Value.Services?.GetValueOrDefault(serviceName)?.TablesWithoutContent ??
+                                          new string[] { })
+                {
+                    Interactions.WriteColourLine($"{Environment.NewLine}Creating table \"{tableName}\" without content ...{Environment.NewLine}", ConsoleColor.Blue);
+                    var tablecreated = await _mediator.Send(new CreateTableCommand(tableName), cancellationToken);
+                    if (tablecreated)
+                        Interactions.WriteColourLine($"Table \"{tableName}\" created! {Environment.NewLine}", ConsoleColor.Green);
+                }
+
                 return true;
             }
             catch (Exception e)

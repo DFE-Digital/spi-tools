@@ -50,9 +50,6 @@ public class CopyBlobsCommand : IRequest<bool>
                         $"{Environment.NewLine}Blob container \"{blobContainerName}\" created! {Environment.NewLine}",
                         ConsoleColor.Green);
 
-                    if (!(_configuration.Value.Services?.GetValueOrDefault(serviceName)?.CopyBlobContainerContents ??
-                          true)) continue;
-
                     Interactions.WriteColourLine(
                         $"{Environment.NewLine}Copying all blobs from \"{blobContainerName}\"...{Environment.NewLine}",
                         ConsoleColor.Blue);
@@ -66,6 +63,17 @@ public class CopyBlobsCommand : IRequest<bool>
                         $"{Environment.NewLine}Copying blobs from \"{blobContainerName}\" succeeded! {Environment.NewLine}",
                         ConsoleColor.Green);
                 }
+
+                foreach (var blobContainerName in _configuration.Value.Services?.GetValueOrDefault(serviceName)
+                             ?.BlobContainersWithoutContent ?? new string[] { })
+                {
+                    await (await _azureStorageClientService.GetBlobContainerClient(blobContainerName)).CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+
+                    Interactions.WriteColourLine(
+                        $"{Environment.NewLine}Blob container \"{blobContainerName}\" created! {Environment.NewLine}",
+                        ConsoleColor.Green);
+                }
+
 
                 return true;
             }
