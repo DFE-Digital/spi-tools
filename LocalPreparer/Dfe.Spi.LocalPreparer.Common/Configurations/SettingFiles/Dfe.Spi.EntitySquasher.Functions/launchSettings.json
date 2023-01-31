@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Dfe.Spi.EntitySquasher.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7077"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "SPI_GiasApi__Url": "https://ea-edubase-api-prod.azurewebsites.net/edubase/service",
+    "SPI_GiasApi__Username": "", // add credentials
+    "SPI_GiasApi__Password": "", // add credentials
+    "SPI_GiasApi__ExtractId": "", // add credentials
+    "SPI_GiasApi__ExtractEstablishmentsFileName": "Eapim_Daily_Download.csv",
+    "SPI_GiasApi__ExtractGroupsFileName": "groups.csv",
+    "SPI_GiasApi__ExtractGroupLinksFileName": "groupLinks.csv",
+    "SPI_Cache__DownloadSchedule": "0 0 7 * * *",
+    "SPI_Cache__TableStorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Cache__EstablishmentTableName": "establishments",
+    "SPI_Cache__GroupTableName": "groups",
+    "SPI_Cache__LocalAuthorityTableName": "localauthorities",
+    "SPI_Cache__StateTableName": "status",
+    "SPI_Cache__ProcessingQueueConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Cache__TidyCacheSchedule": "0 0 22 * * *",
+    "SPI_Cache__NumberOfDaysToRetainStagingData": "14",
+    "SPI_Middleware__BaseUrl": "http://localhost:7073/publish/spi-gias-events/",
+    "SPI_Middleware__SubscriptionKey": "",
+    "SPI_Translator__BaseUrl": "http://localhost:7079/api/",
+    "SPI_Translator__SubscriptionKey": "",
+    "SPI_Authentication__TokenEndpoint": "",
+    "SPI_Authentication__ClientId": "",
+    "SPI_Authentication__ClientSecret": "",
+    "SPI_Authentication__Resource": ""
+  },
+  "ConnectionStrings": {}
+}

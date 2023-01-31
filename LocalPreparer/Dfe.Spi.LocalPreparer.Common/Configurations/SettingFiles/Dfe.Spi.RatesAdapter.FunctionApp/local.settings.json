@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "StorageConnectionString": "UseDevelopmentStorage=true",
+    "SchoolInformationTableName": "SchoolInformation",
+    "LocalAuthorityInformationTableName": "LocalAuthorityInformation"
+  },
+  "ConnectionStrings": {}
+}

@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SPI_Registry__RegistryApiBaseUrl": "http://localhost:7076/",
+    "SPI_Registry__RegistryApiSubscriptionKey": "",
+    "SPI_EntityRepository__SquasherApiBaseUrl": "http://localhost:7077/",
+    "SPI_EntityRepository__SquasherApiSubscriptionKey": "",
+    "SPI_EnumerationRepository__TranslatorApiBaseUrl": "http://localhost:7079/api/",
+    "SPI_EnumerationRepository__TranslatorApiSubscriptionKey": ""
+  },
+  "ConnectionStrings": {}
+}

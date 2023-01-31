@@ -1,0 +1,29 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "SPI_UkrlpApi__Url": "http://webservices.ukrlp.co.uk/UkrlpProviderQueryWS5/ProviderQueryServiceV5",
+    "SPI_UkrlpApi__StakeholderId": "2",
+    "SPI_Cache__ProviderProcessingQueueConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Cache__ProviderSchedule": "0 0 5 * * *",
+    "SPI_Cache__TableStorageConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Cache__ProviderTableName": "providers",
+    "SPI_Cache__StateTableName": "status",
+    "SPI_Cache__NumberOfConcurrentThreadsToCachePerRequest": "20",
+    "SPI_Cache__TidyCacheSchedule": "0 0 22 * * *",
+    "SPI_Cache__NumberOfDaysToRetainStagingData": "14",
+    "SPI_Middleware__BaseUrl": "http://localhost:7073/publish/spi-ukrlp-events/",
+    "SPI_Middleware__SubscriptionKey": "",
+    "SPI_Translator__BaseUrl": "http://localhost:7079/api/",
+    "SPI_Translator__SubscriptionKey": "",
+    "SPI_Authentication__TokenEndpoint": "",
+    "SPI_Authentication__ClientId": "",
+    "SPI_Authentication__ClientSecret": "",
+    "SPI_Authentication__Resource": ""
+  },
+  "ConnectionStrings": {}
+}

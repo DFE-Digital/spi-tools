@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Mac OS files
 .DS_Store
+/LocalPreparer/Dfe.Spi.LocalPreparer/appsettings.json

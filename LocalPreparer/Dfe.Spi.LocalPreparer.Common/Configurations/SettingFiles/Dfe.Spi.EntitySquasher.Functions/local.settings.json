@@ -1,0 +1,19 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "UseDevelopmentStorage=true",
+    "WEBSITE_CONTENTSHARE": "s139d01-squasher-fa-01",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SPI_Gias__Url": "http://localhost:7075/",
+    "SPI_Ukrlp__Url": "http://localhost:7074/",
+    "SPI_Rates__Url": "http://localhost:7078/api/",
+    "SPI_IStore__Url": "http://localhost:7080/",
+    "SPI_Profile__BlobConnectionString": "UseDevelopmentStorage=true",
+    "SPI_Profile__ContainerName": "algorithm-configuration-declaration-files",
+    "SPI_Profile__CacheDurationSeconds": "1800"
+  },
+  "ConnectionStrings": {}
+}
