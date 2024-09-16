@@ -122,7 +122,7 @@ namespace Dfe.Spi.HistoricalDataLoader.RegistryLoaderConsoleApp
                 var potentialBatchSize = registeredEntities
                     .Select(SizeOf)
                     .Sum();
-                if (potentialBatchSize >= maxRequestSize)
+                if (potentialBatchSize >= maxRequestSize || registeredEntityDocumentIds.Count > 100)
                 {
                     _logger.Information("Batch would be too large, processing individually");
                     for (var j = 0; j < registeredEntities.Length; j++)
