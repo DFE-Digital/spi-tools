@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Dfe.Spi.Registry.Functions": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7076"
+    }
+  }
+}
